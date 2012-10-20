@@ -96,7 +96,7 @@ projects[oauth][version] = 3.0-alpha1
 
 ; services
 projects[services][subdir] = contrib 
-projects[services][version] = 3.x-3.2
+projects[services][version] = 3.2
 
 projects[rdfx][subdir] = contrib
 projects[sparql][subdir] = contrib
