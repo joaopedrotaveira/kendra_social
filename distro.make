@@ -19,7 +19,7 @@
 api = 2
 core = 7.x
 projects[drupal][type] = core
-projects[drupal][version] = "7.15"
+projects[drupal][version] = "7.16"
 
 ; -------------
 ; Patches
@@ -40,4 +40,3 @@ projects[drupal][patch][995156] = http://drupal.org/files/995156-31_portable_tax
 projects[kendra_social][type] = profile
 projects[kendra_social][download][type] = git
 projects[kendra_social][download][url] = git://github.com/joaopedrotaveira/kendra_social.git
-;projects[kendra_social][download][tag] = 7.x-1.0-dev
