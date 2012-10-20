@@ -13,7 +13,7 @@
 api = 2
 core = 7.x
 projects[drupal][type] = core
-projects[drupal][version] = "7.15"
+projects[drupal][version] = "7.16"
 
 ; -------------
 ; Modules
@@ -51,7 +51,8 @@ projects[entity][version] = 1.0-beta10
 projects[fb][subdir] = contrib
 projects[fb][version] = 3.x-dev
 projects[features][subdir] = contrib
-projects[features][version] = 1.0-beta3
+;projects[features][version] = 1.0-beta3
+projects[features][version] = 2.0
 projects[feeds][subdir] = contrib
 projects[feeds][version] = 2.0-alpha4
 projects[fivestar][subdir] = contrib
