@@ -20,12 +20,6 @@ projects[drupal][version] = "7.16"
 ; -------------
 
 
-projects[spyc][type] = library
-projects[spyc][download][type] = file
-projects[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
-projects[spyc][download][filename] = "../spyc.php"
-projects[spyc][destination] = modules/contrib/services/servers/rest_server/lib
-
 ; Kendra API
 projects[kendra_api][subdir] = features
 projects[kendra_api][type] = module
@@ -168,11 +162,11 @@ libraries[facebook-php-sdk][directory_name] = facebook-php-sdk
 ;;libraries[spyc][directory_name] = spyc
 ;libraries[spyc][destination] = libraries
 
-;projects[spyc][type] = library
-;projects[spyc][download][type] = file
-;projects[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
-;projects[spyc][download][filename] = "../spyc.php"
-;projects[spyc][destination] = modules/contrib/services/servers/rest_server/lib
+projects[spyc][type] = library
+projects[spyc][download][type] = file
+projects[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
+projects[spyc][download][filename] = "../spyc.php"
+projects[spyc][destination] = modules/contrib/services/servers/rest_server/lib
 
 ; custom libraries for Kendra Social
 libraries[kendra_social_test][download][[type] = file
