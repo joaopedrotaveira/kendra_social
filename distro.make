@@ -39,5 +39,5 @@ projects[drupal][patch][995156] = http://drupal.org/files/995156-31_portable_tax
 
 projects[kendra_social][type] = profile
 projects[kendra_social][download][type] = git
-projects[kendra_social][download][url] = git://github.com/kendrainitiative/kendra_social.git
+projects[kendra_social][download][url] = git://github.com/joaopedrotaveira/kendra_social.git
 ;projects[kendra_social][download][tag] = 7.x-1.0-dev

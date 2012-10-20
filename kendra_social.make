@@ -15,7 +15,7 @@ core = 7.x
 projects[drupal][type] = core
 
 ; require Kendra Social core makefile
-includes[kendra_social] = https://raw.github.com/kendrainitiative/kendra_social/master/drupal-org.make
+includes[kendra_social] = https://raw.github.com/joaopedrotaveira/kendra_social/master/drupal-org.make
 
 ; require Kendra Match makefile
 ;includes[kendra_match] = https://raw.github.com/kendrainitiative/kendra_match/master/kendra_match.make

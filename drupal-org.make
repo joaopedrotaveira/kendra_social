@@ -95,11 +95,7 @@ projects[oauth][version] = 3.0-alpha1
 
 ; services
 projects[services][subdir] = contrib 
-projects[services][version] = 3.x-dev
-;projects[services][download][type] = git
-;projects[services][download][url] = http://git.drupal.org/project/services.git
-;projects[services][download][url] = https://github.com/kendrainitiative/drupal_services.git
-;projects[services][download][branch] = 7.x-3.x 
+projects[services][version] = 3.x-3.2
 
 projects[rdfx][subdir] = contrib
 projects[sparql][subdir] = contrib
@@ -160,15 +156,16 @@ libraries[facebook-php-sdk][download][url] = "git://github.com/facebook/php-sdk.
 libraries[facebook-php-sdk][directory_name] = facebook-php-sdk
 
 ; Spyc: required for Services 3.1
-libraries[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
-libraries[spyc][download][type] = file
-;libraries[spyc][directory_name] = spyc
-libraries[spyc][destination] = libraries
-projects[spyc][type] = library
-projects[spyc][download][type] = file
-projects[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
-projects[spyc][download][filename] = "../spyc.php"
-projects[spyc][destination] = modules/contrib/services/servers/rest_server/lib
+;libraries[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
+;libraries[spyc][download][type] = file
+;;libraries[spyc][directory_name] = spyc
+;libraries[spyc][destination] = libraries
+
+;projects[spyc][type] = library
+;projects[spyc][download][type] = file
+;projects[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
+;projects[spyc][download][filename] = "../spyc.php"
+;projects[spyc][destination] = modules/contrib/services/servers/rest_server/lib
 
 ; custom libraries for Kendra Social
 libraries[kendra_social_test][download][[type] = file
