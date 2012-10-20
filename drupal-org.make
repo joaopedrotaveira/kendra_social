@@ -23,7 +23,7 @@ projects[drupal][version] = "7.16"
 projects[kendra_api][subdir] = features
 projects[kendra_api][type] = module
 projects[kendra_api][download][type] = git
-projects[kendra_api][download][url] = https://github.com/kendrainitiative/kendra_api.git
+projects[kendra_api][download][url] = https://github.com/joaopedrotaveira/kendra_api.git
 
 ; Kendra Match
 projects[kendra_match][subdir] = features
