@@ -19,6 +19,13 @@ projects[drupal][version] = "7.16"
 ; Modules
 ; -------------
 
+
+projects[spyc][type] = library
+projects[spyc][download][type] = file
+projects[spyc][download][url] = http://spyc.googlecode.com/svn/trunk/spyc.php
+projects[spyc][download][filename] = "../spyc.php"
+projects[spyc][destination] = modules/contrib/services/servers/rest_server/lib
+
 ; Kendra API
 projects[kendra_api][subdir] = features
 projects[kendra_api][type] = module
