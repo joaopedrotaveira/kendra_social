@@ -137,7 +137,7 @@ projects[markdown][patch][684554] = http://drupal.org/files/issues/markdown-6845
 
 ; html5-boilerplate
 libraries[html5bp][download][type] = "file"
-libraries[html5bp][download][url] = "http://github.com/paulirish/html5-boilerplate/zipball/v1.0stripped"
+libraries[html5bp][download][url] = "http://github.com/h5bp/html5-boilerplate/zipball/v1.0stripped"
 
 ; jquery + jqueryui
 libraries[jquery][download][type] = "file"
