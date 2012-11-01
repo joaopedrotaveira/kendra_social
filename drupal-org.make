@@ -161,7 +161,8 @@ libraries[jsonpath][destination] = modules/contrib/feeds_jsonpath_parser
 
 ; Facebook PHP SDK
 libraries[facebook-php-sdk][download][type] = "git"
-libraries[facebook-php-sdk][download][url] = "git://github.com/facebook/php-sdk.git"
+;libraries[facebook-php-sdk][download][url] = "git://github.com/facebook/php-sdk.git"
+libraries[facebook-php-sdk][download][url] = "git://github.com/facebook/facebook-php-sdk.git"
 libraries[facebook-php-sdk][directory_name] = facebook-php-sdk
 
 ; Spyc: required for Services 3.1
