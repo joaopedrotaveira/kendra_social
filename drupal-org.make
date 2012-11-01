@@ -98,6 +98,10 @@ projects[oauth][version] = 3.0-alpha1
 projects[services][subdir] = contrib 
 projects[services][version] = 3.2
 
+; twitter
+projects[twitter][subdir] = contrib 
+projects[twitter][version] = 3.3
+
 projects[rdfx][subdir] = contrib
 projects[sparql][subdir] = contrib
 
