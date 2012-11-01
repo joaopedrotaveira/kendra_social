@@ -36,25 +36,25 @@ projects[kendra_match][download][url] = https://github.com/kendrainitiative/kend
 ;projects[admin][subdir] = contrib
 ;projects[admin][version] = 2.0-beta3
 projects[admin_menu][subdir] = contrib
-projects[admin_menu][version] = 3.0-rc1
+projects[admin_menu][version] = 3.0-rc3
 projects[boxes][subdir] = contrib
 projects[boxes][version] = 1.0-beta5
 projects[context][subdir] = contrib
 projects[context][version] = 3.0-beta1
 projects[ctools][subdir] = contrib
-projects[ctools][version] = 1.0
+projects[ctools][version] = 1.2
 projects[devel][subdir] = contrib
-projects[devel][version] = 1.2
+projects[devel][version] = 1.3
 ;projects[diff][subdir] = contrib
 ;projects[diff][version] = 2.0-beta2
 projects[entity][subdir] = contrib
-projects[entity][version] = 1.0-beta10
+projects[entity][version] = 1.0-rc3
 projects[fb][subdir] = contrib
 projects[fb][version] = 3.x-dev
 projects[features][subdir] = contrib
 projects[features][version] = 1.0
 projects[feeds][subdir] = contrib
-projects[feeds][version] = 2.0-alpha4
+projects[feeds][version] = 2.0-alpha7
 projects[fivestar][subdir] = contrib
 projects[fivestar][version] = 2.0-alpha2
 projects[votingapi][subdir] = contrib
@@ -64,7 +64,7 @@ projects[community_tags][version] = 1.0
 projects[html5_base][subdir] = contrib
 projects[html5_base][version] = 2.x-dev
 projects[job_scheduler][subdir] = contrib
-projects[job_scheduler][version] = 2.0-alpha2
+projects[job_scheduler][version] = 2.0-alpha3
 projects[jquery_plugin][subdir] = contrib
 projects[jquery_plugin][version] = 1.0
 projects[jquery_update][subdir] = contrib
@@ -106,12 +106,15 @@ projects[rdfx][subdir] = contrib
 projects[sparql][subdir] = contrib
 
 ; feeds_jsonpath_parser
-;projects[feeds_jsonpath_parser][patch][] = http://drupal.org/files/feeds_jsonpath_parser-drush_make.patch
-;projects[feeds_jsonpath_parser][version] = 1.x-dev
+;;projects[feeds_jsonpath_parser][patch][] = http://drupal.org/files/feeds_jsonpath_parser-drush_make.patch
+;;projects[feeds_jsonpath_parser][version] = 1.x-dev
+;projects[feeds_jsonpath_parser][subdir] = contrib
+;projects[feeds_jsonpath_parser][type] = module
+;projects[feeds_jsonpath_parser][download][type] = file
+;projects[feeds_jsonpath_parser][download][url] = http://www.kendra.org.uk/feeds_jsonpath_parser-patched.tgz
 projects[feeds_jsonpath_parser][subdir] = contrib
-projects[feeds_jsonpath_parser][type] = module
-projects[feeds_jsonpath_parser][download][type] = file
-projects[feeds_jsonpath_parser][download][url] = http://www.kendra.org.uk/feeds_jsonpath_parser-patched.tgz
+projects[feeds_jsonpath_parser][version] = 1.0-beta2
+
 
 ; -------------
 ; Themes
