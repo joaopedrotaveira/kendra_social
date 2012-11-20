@@ -6,23 +6,25 @@ function _kendra_social_albums_add_item($box, $data) {
     if (_kendra_social_album_access_check('edit', $box, $user)) {
       $media = _kendra_saracen_trial_mod_lookup_id($data['item']);
       if ($media) {
-      	$query = new EntityFieldQuery();
-      	$res_boxes = $query->entityCondition('entity_type', 'relation')->entityCondition('bundle', 'album_contains')->fieldCondition('endpoints', 'entity_id', $media, '=')->execute();
-      	if (!empty($res_boxes['relation'])) {
-      		return array('status' => 'ok', 'message' => "album already contains media item ({$data['item']})");
-      	} 
       	$endpoints = array(
+	  array('entity_type' => 'node', 'entity_id' => $box->nid),
+	  array('entity_type' => 'node', 'entity_id' => $media),
+	);
+	$results = relation_relation_exists($endpoints, 'album_contains');
+	if($results !== FALSE){
+	  return array('status' => 'ok', 'message' => "album already contains media item ({$data['item']})");
+	}
+      	/*$endpoints = array(
           array('entity_type' => 'node', 'entity_id' => $box->nid),
           array('entity_type' => 'node', 'entity_id' => $media),
-        );
+        );*/
         $relation = relation_create('album_contains', $endpoints);
         $rid = relation_save($relation);
-				if ($user->uid != $box->uid) {
-  			  _kss_notification_add('Share', $media, $user->uid, $box->uid, $box->nid, $rid);
-				}
+	if ($user->uid != $box->uid) {
+	  _kss_notification_add('Share', $media, $user->uid, $box->uid, $box->nid, $rid);
+	}
         // Add this event to recommender
         _kendra_saracen_save_recommend($user->uid, $media, 'share', $media, FALSE, NULL, 'implicit');
-
         return array('status' => 'ok', 'message' => "added media item ({$data['item']}) ({$media}) to box ({$box->nid})");
       } else {
         return array('status' => 'error', 'message' => 'no media item found with that id');
@@ -246,9 +248,15 @@ function _kendra_social_albums_index_fetch($account = NULL) {
     }
   }
   foreach ($output as $nid => $box) {
-    $album_node = _kendra_social_albums_retrieve($nid);
-    if (!empty($album_node->id)) {
+    //$album_node = _kendra_social_albums_retrieve($nid);
+    $album_node = node_load($nid);
+    //if (!empty($album_node->id)) {
+    if (!empty($album_node->nid)) {
       $output[$nid]['title'] = $album_node->title;
+      $description = field_get_items('node', $album_node, 'field_album_description');
+      if (!empty($description)) {
+	      $album_node->description = $description[0]['value'];
+      }
       $output[$nid]['description'] = !empty($album_node->description) ? $album_node->description : '';
       $output[$nid]['item_count'] = isset($album_node->items) ? count($album_node->items) : 0;
     } else {
