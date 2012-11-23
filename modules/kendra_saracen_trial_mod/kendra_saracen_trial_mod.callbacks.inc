@@ -344,8 +344,9 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     $page_size = 10;
   }
 
-  $page1 = intval($page) * $page_size;
-  $page2 = $page1 + $page_size;
+  //$page1 = intval($page) * $page_size;
+  $offset = intval($page) * intval($page_size);
+  //$page2 = $page1 + $page_size;
 
   if (!empty($category)) {
     $vocab = taxonomy_vocabulary_machine_name_load('media_category');
@@ -363,19 +364,32 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
   }
 
 	if (!empty($category_tid)) {
-		$result = db_query("SELECT n.nid FROM {node} n
+		/*$result = db_query("SELECT n.nid FROM {node} n
 			INNER JOIN {field_data_field_mediaitem_category} t ON t.entity_id = n.nid
 			WHERE ((n.type = 'mediaitem' AND n.status = 1) OR n.uid = :uid)
 			AND t.field_mediaitem_category_tid = :tid
 			ORDER BY n.changed DESC LIMIT {$page1}, {$page2}",
+		  array(':uid' => $uid, ':tid' => $category_tid));*/
+		$result = db_query("SELECT n.nid FROM {node} n
+			INNER JOIN {field_data_field_mediaitem_category} t ON t.entity_id = n.nid
+			WHERE ((n.type = 'mediaitem' AND n.status = 1) OR n.uid = :uid)
+			AND t.field_mediaitem_category_tid = :tid
+			ORDER BY n.changed DESC LIMIT {$offset}, {$page_size}",
 		  array(':uid' => $uid, ':tid' => $category_tid));
 	} else {
 		// if was given category but got here then category was empty
 		if (!empty($category)) {
 			return array();
 		}
-    $result = db_query("SELECT nid FROM {node} WHERE (type = 'mediaitem' AND status = 1) OR uid = :uid ORDER BY changed DESC LIMIT {$page1}, {$page2}",
-      array(':uid' => $uid));
+    		/*$result = db_query("SELECT nid FROM {node} WHERE (type = 'mediaitem' AND status = 1) OR uid = :uid ORDER BY changed DESC LIMIT {$page1}, {$page2}",array(':uid' => $uid));*/
+    		$result = db_query(
+				"SELECT nid 
+				FROM {node} 
+				WHERE 
+					(type = 'mediaitem' AND status = 1) 
+					OR uid = :uid 
+				ORDER BY changed DESC 
+				LIMIT {$offset}, {$page_size}",array(':uid' => $uid));
 	}
 
   $results = array();
