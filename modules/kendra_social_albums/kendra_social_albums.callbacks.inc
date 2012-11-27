@@ -112,7 +112,7 @@ function _kendra_social_albums_check_perm($box, $uid) {
 	$w = FALSE;
 	$account = user_load($box->uid);
 	$friends = in_array($uid, array_keys($account->saracen_friends));
-  if (!empty($box->field_album_public[LANGUAGE_NONE][0]['value'])) {
+	if (!empty($box->field_album_public[LANGUAGE_NONE][0]['value'])) {
 		$r = TRUE;
 	}
 	if ($friends && strstr($box->field_album_friends[LANGUAGE_NONE][0]['safe_value'], 'R')) {
@@ -159,20 +159,21 @@ function _kendra_social_albums_index($uid = NULL) {
     if (!empty($user_albums['node'])) {
       foreach ($user_albums['node'] as $aid => $v) {
         $box = node_load($aid);
-   			$perm = _kendra_social_albums_check_perm($box, $user->uid);
-				if ($perm['R'] || $perm['W']) {
-          $boxes[$aid] = array(
-						'id' => $box->nid,
-            'title' => $box->title,
-            'description' => $box->field_album_description[LANGUAGE_NONE][0]['safe_value'],
+	$perm = _kendra_social_albums_check_perm($box, $user->uid);
+	if ($perm['R'] || $perm['W']) {
+		$boxes[$aid] = array(
+			  'id' => $box->nid,
+			  'title' => $box->title,
+			  'description' => $box->field_album_description[LANGUAGE_NONE][0]['safe_value'],
   		   		'owner' => $box->uid,
 				  	'public' => empty($box->field_album_public[LANGUAGE_NONE][0]['value']) ? FALSE : TRUE,
 					  'friends' => empty($box->field_album_friends[LANGUAGE_NONE][0]['safe_value']) ? "" : $box->field_album_friends[LANGUAGE_NONE][0]['safe_value'],
 						'R' => $perm['R'],
 						'W' => $perm['W'],
+
           );
         }
-			}
+      }
     }
     return $boxes;
   }

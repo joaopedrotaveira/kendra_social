@@ -121,7 +121,8 @@ function _kendra_saracen_update_facebook_profile($item) {
       $failed = TRUE;
     }
     if ($failed) {
-      _kss_notification_add('FB Error', 0, 0, $item->uid);
+      // The line below was flooding users
+      //FIXME: _kss_notification_add('FB Error', 0, 0, $item->uid);
     }
   }
   _kendra_saracen_import_facebook_friend($item);
@@ -139,7 +140,7 @@ function _kendra_saracen_get_facebook_friends($account, $fbu, $access_code) {
 	  cache_set('saracen_fb_user_friends_' . $fbu, $data->data);
 	  return $data->data;
 	} else {
-		watchdog('fb friend debug2', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($item, TRUE));
+		watchdog('fb friend debug2', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($account->uid, TRUE));
 	}
 	return array();
 }
@@ -233,6 +234,7 @@ function _kss_fb_connect_debug() {
   $app_secret = $_fb_app->secret;
   $my_url = url('fb-update', array('absolute' => TRUE));
   $my_url = 'https://trial.saracen-p2p.eu/fb-update';
+  //$my_url = 'http://trial.monster.taveiranet.com/fb-update';
 
   watchdog('d', $my_url);
 
@@ -429,10 +431,11 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 	  $output = array();
 	  $res = $res->fetchAll();
 	  foreach ($res as $node) {
-		  $node = node_load($node->recommended_nid);
+	  	$output[$node->recommended_nid] = _kendra_saracen_trial_mod_get_mediaitem($node->recommended_nid);
+		  /*$node = node_load($node->recommended_nid);
 		  if (!empty($node->nid)) {
   		  $output[$node->nid] = $node;
-			}
+			}*/
 	  }
 	  return $output;
   } else {

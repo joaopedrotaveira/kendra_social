@@ -147,6 +147,17 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
       }
     }
 
+    /*
+    // A failed attempt to use IMD Voting Aggregation Module to VotingAPI
+    $criteria = array(
+		    'entity_type' => 'node',
+		    'entity_id' => $node->nid,
+		    'value_type' => 'percent',
+		    'tag' => 'vote',
+		    'function' => 'imdb',
+		    );
+    $votes = votingapi_select_results($criteria);
+    */
     // Lookup ratings
     $votes = fivestar_get_votes('node', $node->nid, 'vote');
     if (isset($votes['average']['value'])) {
