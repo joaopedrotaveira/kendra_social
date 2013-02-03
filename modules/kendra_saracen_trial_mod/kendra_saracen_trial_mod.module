@@ -442,7 +442,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 			foreach ($recommendations as $recommendation) {
 				list($item_id, $weight) = $recommendation;
 				if(empty($inner_query)){
-					$inner_query .= "( SELECT {$item_id} AS nid, {$weight} AS weight ";
+					$inner_query .= "( SELECT {$item_id} AS recommended_nid, {$weight} AS weight ";
 				} else {
 					$inner_query .= " UNION SELECT {$item_id}, {$weight} ";
 				}
@@ -456,8 +456,8 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 		return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
 	}
 
-	$query = "SELECT DISTINCT recommended_nid FROM {node} n ";
-	$query .= "INNER JOIN ".$inner_query." ON n.nid = r.nid ";
+	$query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
+	$query .= "INNER JOIN ".$inner_query." ON n.nid = r.recommended_nid ";
 	$query .= "WHERE n.status=1 AND n.nid != :nid ";
 	$query .= "ORDER BY r.weight DESC;";
 	
