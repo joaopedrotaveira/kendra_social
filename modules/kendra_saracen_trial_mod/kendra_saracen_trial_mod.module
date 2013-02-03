@@ -437,7 +437,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 	$response = drupal_http_request($url);
 	if ($response->code == 200) {
 		$recommendations = json_decode($response->data);
-		watchdog('mahout', 'Mahout Data: ' . print_r($response, TRUE) . ' for ' . print_r($uid, TRUE));
+		watchdog('mahout', 'Mahout Data: ' . print_r($response, TRUE) . ' for ' . print_r($nid, TRUE));
 		try {
 			foreach ($recommendations as $recommendation) {
 				list($item_id, $weight) = $recommendation;
@@ -451,9 +451,9 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 		} catch (Exception $e){
 			watchdog_exception('mahout', $e);
 		}
-		return array();
 	} else {
 		watchdog('mahout', 'failed to contact mahout: ' . print_r($response, TRUE) . ' for ' . print_r($uid, TRUE));
+		return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
 	}
 
 	$query = "SELECT DISTINCT recommended_nid FROM {node} n ";
