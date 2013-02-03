@@ -426,12 +426,12 @@ function _kendra_saracen_trial_mod_add_rate_mediaitem($id, $data, $lookup_nid = 
   }
   // TODO: add error checking so no null result
   _kendra_saracen_save_recommend($account, $nid, 'rating', $data['value']);
-  //_kendra_saracen_save_recommend($account, $nid, 'like', $data['value']);
 
   $org_node = node_load($nid);
 
   $vote = _fivestar_cast_vote('node', $nid, $data['value'], 'vote', $account);
-  _kss_notification_add('Rate', $vote['user']['vote_id'], $account, $org_node->uid, $nid);
+  /* _kss_notification_add('Rate', $vote['user']['vote_id'], $account, $org_node->uid, $nid); */
+  _kss_notification_add('Rate', $nid, $account, $org_node->uid, $vote['user']['vote_id']);
 
   return $vote;
   //return func_get_args();
@@ -499,7 +499,7 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
 
   $node->field_mediaitem_identifier['und'][0]['value'] = $data['identifier'];
 
-  if (isset($node->status)) {
+  if (isset($node->status) && isset($data['status'])) {
     $node->status = $data['status'];
   }
   elseif ($op == 'registered') {
@@ -548,9 +548,9 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
     }
   }
   node_object_prepare($node);
-  if ($op == 'updated') {
+  /*if ($op == 'updated') {
     $node->status = 1;
-  }
+  }*/
   node_save($node);
 
   /**
@@ -622,7 +622,7 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
 * save media metadata to triple store
 */
 function _kendra_saracen_trial_mod_mediaitem_save_triples(&$node, &$data, $store) {
-	if (is_array($data)) {
+	/*if (is_array($data)) {
 		foreach ($data as $value) {
 			_kendra_saracen_trial_mod_mediaitem_save_triples($node, $value, $store);
 		}
@@ -637,6 +637,15 @@ function _kendra_saracen_trial_mod_mediaitem_save_triples(&$node, &$data, $store
 		    "  <{$url}> <{$predicate}> \"{$value}\" .\n" . "}\n"
 		  );
 		}
+	}*/
+
+	foreach ($data as $key => $value) {
+		$value     = str_replace('"', '\"', trim($value));
+		$url       = url('node/' . $node->nid, array('absolute' => TRUE));
+		$predicate = url('node/' . $node->nid, array('fragment' => $key, 'absolute' => TRUE));
+		$store->query("INSERT INTO <mediaitems> {\n" .
+				"  <{$url}> <{$predicate}> \"{$value}\" .\n" . "}\n"
+			     );
 	}
 }
 

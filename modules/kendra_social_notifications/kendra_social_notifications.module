@@ -37,7 +37,8 @@ function _kss_notification_add($type, $source, $user_from, $user_to, $source2 = 
 }
 
 function _kss_notification_create($args) {
-	watchdog('notification', '<pre>' . print_r(func_get_args(), TRUE) . '</pre>');
+	$localargs = func_get_args();
+	watchdog('notification', '<pre>' . print_r($localargs, TRUE) . '</pre>');
   $user_name = $args['name'];
   $type = $args['action'];
   $title = $args['title'];
@@ -49,7 +50,8 @@ function _kss_notification_create($args) {
     if (!empty($uid)) {
       _kss_notification_add('Reject', 0, 0, $uid);
     } else {
-      watchdog('reject fail', '<pre>' . print_r(func_get_args(), TRUE) . '</pre>');
+	$localargs = func_get_args();
+      watchdog('reject fail', '<pre>' . print_r($localargs, TRUE) . '</pre>');
     }
   }
 	return array('status' => 'ok', 'message' => 'notification logged');
@@ -115,26 +117,47 @@ function _kss_notification_list($filter, $type) {
 function _kss_notification_create_message($result) {
   if ($result->type == 'FB Error') {
     return "Your Facebook access token has expired. Please go to " .
-      'https://trial.saracen-p2p.eu/fb-update';
-      //'http://trial.monster.taveiranet.com/fb-update';
+      'http://cms.saracen-p2p.eu/fb-update';
+      /*'http://trial.monster.taveiranet.com/fb-update';*/
   }
   $node = node_load($result->source);
-	if ($result->type == "Share") {
-		$box = node_load($result->source2);
-		return "{$result->name} added video {$node->title} to your {$box->title} box";
-	}
-	if ($result->type == "Import") {
-		return "Import of video {$node->title} completed.";
-	}
+  /* watchdog('_kss_notification_create_message debug',' result: ' . print_r($result, TRUE) . ' node: ' . print_r($node, TRUE)); */
+  if ($result->type == "Share") {
+	  $box = node_load($result->source2);
+	  return "{$result->name} added video {$node->title} to your {$box->title} box";
+  }
+  if ($result->type == "Import") {
+	  return "Import of video {$node->title} completed.";
+  }
   if ($result->type == "Rate") {
+    /* $item = node_load($result->source2);
+    return "{$result->name} rated your content {$item->title}"; */
     return "{$result->name} rated your content {$node->title}";
   }
   if ($result->type == "Reject") {
     return "An item of content was rejected by the encoder";
   }
   if ($result->type == "Comment") {
-    $pre = user_load($result->from);
-    return "{$pre->name} commented on {$node->title}";
+    /*$pre = user_load($result->from);
+    return "{$pre->name} commented on {$node->title}";*/
+    /* $item = node_load($result->source2);
+    return "{$result->name} comment on {$item->title}"; */
+    return "{$result->name} comment on {$node->title}";
+  }
+  if ($result->type == "Friend") {
+    /*$pre = user_load($result->from);
+    return "{$pre->name} tagged on {$node->title}";*/
+    /* $item = node_load($result->source2); */
+    /* watchdog('_kss_notification_create_message debug', ' result: ' . print_r($result, TRUE) . ' friend source2: ' . print_r($item, TRUE)); */
+    /* return "{$result->name} tagged on {$item->title}"; */
+    return "{$result->name} tagged on {$node->title}";
+  }
+  if ($result->type == "Review") {
+    /* $pre = user_load($result->from);
+    return "{$pre->name} tagged on {$node->title}";*/
+    /* $item = node_load($result->source2);
+    return "{$result->name} add review on {$item->title}";*/
+    return "{$result->name} add review on {$node->title}";
   }
   if ($node->nid) {
     return "{$result->name} added a {$result->type} on video {$node->title}";

@@ -98,6 +98,8 @@ function _kendra_saracen_queue_worker($item) {
   if ($item->type == 'facebook_profile') {
     _kendra_saracen_update_facebook_profile($item);
   }
+  $queue = DrupalQueue::get('kendra_saracen_trial');
+  $queue->deleteItem($item);
 }
 
 function _kendra_saracen_update_facebook_profile($item) {
@@ -108,6 +110,7 @@ function _kendra_saracen_update_facebook_profile($item) {
     $key = "fb_{$connection}";
     $response = drupal_http_request("https://graph.facebook.com/{$item->fbu}/{$connection}?access_token={$item->access_token}");
     if ($response->code == 200) {
+      watchdog('fb debug', 'response: ' . print_r($response->data, TRUE) . ' for ' . print_r($item, TRUE));
       $data = json_decode($response->data);
       foreach ($data->data as $like) {
         _kendra_saracen_save_recommend($item->uid, NULL, 'profile', $like->name, $first, $like->id);
@@ -136,9 +139,9 @@ function _kendra_saracen_get_facebook_friends($account, $fbu, $access_code) {
 	$fb = "https://graph.facebook.com/{$account->fbu}/friends?access_token={$account->key}";
 	$response = drupal_http_request($fb);
 	if ($response->code == 200) {
-	  $data = json_decode($response->data);
-	  cache_set('saracen_fb_user_friends_' . $fbu, $data->data);
-	  return $data->data;
+		$data = json_decode($response->data);
+		cache_set('saracen_fb_user_friends_' . $fbu, $data->data, 'cache', REQUEST_TIME + 24*60*60);
+		return $data->data;
 	} else {
 		watchdog('fb friend debug2', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($account->uid, TRUE));
 	}
@@ -233,8 +236,7 @@ function _kss_fb_connect_debug() {
 	$app_id = $_fb_app->apikey;
   $app_secret = $_fb_app->secret;
   $my_url = url('fb-update', array('absolute' => TRUE));
-  $my_url = 'https://trial.saracen-p2p.eu/fb-update';
-  //$my_url = 'http://trial.monster.taveiranet.com/fb-update';
+  $my_url = 'https://cms.saracen-p2p.eu/fb-update';
 
   watchdog('d', $my_url);
 
