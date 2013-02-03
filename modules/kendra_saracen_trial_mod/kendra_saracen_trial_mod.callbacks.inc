@@ -426,7 +426,7 @@ function _kendra_saracen_trial_mod_add_rate_mediaitem($id, $data, $lookup_nid = 
   }
   // TODO: add error checking so no null result
   _kendra_saracen_save_recommend($account, $nid, 'rating', $data['value']);
-  _kendra_saracen_save_recommend($account, $nid, 'like', $data['value']);
+  //_kendra_saracen_save_recommend($account, $nid, 'like', $data['value']);
 
   $org_node = node_load($nid);
 

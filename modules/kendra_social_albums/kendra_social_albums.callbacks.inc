@@ -24,7 +24,7 @@ function _kendra_social_albums_add_item($box, $data) {
 	  _kss_notification_add('Share', $media, $user->uid, $box->uid, $box->nid, $rid);
 	}
         // Add this event to recommender
-        _kendra_saracen_save_recommend($user->uid, $media, 'share', $media, FALSE, NULL, 'implicit');
+        _kendra_saracen_save_recommend($user->uid, $media, 'share', NULL, FALSE, NULL, 'implicit');
         return array('status' => 'ok', 'message' => "added media item ({$data['item']}) ({$media}) to box ({$box->nid})");
       } else {
         return array('status' => 'error', 'message' => 'no media item found with that id');
