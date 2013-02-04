@@ -220,8 +220,8 @@ function _kss_accounts_connect($domain = 'facebook.com,twitter.com') {
 }
 
 function _kss_accounts_connect_page() {
-	return "<fb:login-button scope=\"\" v=\"2\">Connect</fb:login-button><br />"
-	  . theme('twitter_signin_button');
+	return "<fb:login-button scope=\"\" v=\"2\">Connect</fb:login-button><br />";
+	//return "<fb:login-button scope=\"\" v=\"2\">Connect</fb:login-button><br />". theme('twitter_signin_button');
 }
 
 /**
