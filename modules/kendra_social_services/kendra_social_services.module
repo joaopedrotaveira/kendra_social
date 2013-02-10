@@ -244,8 +244,6 @@ function _kss_user_load_twitter_data(&$users, $account) {
   }
 }
 
-
-
 function kendra_social_services_permission() {
   return array(
     'access kendra social connect' => array(
