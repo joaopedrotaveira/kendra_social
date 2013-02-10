@@ -4,11 +4,22 @@ function _primetel_subscriber_upgrade($uid = 0){
 	if($uid == 0){
 		return services_error(t('Invalid User ID'));
 	}
-	$regular_user = module_invoke('user', 'load', $uid);
-	$userroles = $regular_user->roles;
-	$userroles[]  = 'primetel subscriber';
-	module_invoke('user', 'save', $regular_user, array('roles' => $userroles));
+	$role_name = 'primetel subscriber';
+	if ($role = user_role_load_by_name($role_name)) {
+		user_multiple_role_edit(array($uid), 'add_role', $role->rid);
+	}
 	return array(t('User Account upgraded successfully'));
+}
+
+function _primetel_subscriber_downgrade($uid = 0){
+	if($uid == 0){
+		return services_error(t('Invalid User ID'));
+	}
+	$role_name = 'primetel subscriber';
+	if ($role = user_role_load_by_name($role_name)) {
+		user_multiple_role_edit(array($uid), 'remove_role', $role->rid);
+	}
+	return array(t('User Account downgraded successfully'));
 }
 
 function primetel_subscribers_get_mappings() {
@@ -27,6 +38,21 @@ function primetel_subscribers_get_mappings() {
 			  )
 			),
 			'callback' => '_primetel_subscriber_upgrade',
+	);
+	$resources['people']['targeted_actions']['subscriberDowngrade'] = array(
+			'help' => 'Downgrade Primetel Subscriber Account to Regular User Account',
+			'access arguments' => array('primetel subscriber upgrade'),
+			'access arguments append' => FALSE,
+			'args' => array(
+					array(
+							'name' => 'uid',
+							'description' => 'user id',
+							'source' => array('path' => '0'),
+							'type' => 'int',
+							'optional' => FALSE,
+			  )
+			),
+			'callback' => '_primetel_subscriber_downgrade',
 	);
 	return $resources;
 }
