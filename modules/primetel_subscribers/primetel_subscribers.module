@@ -5,7 +5,7 @@ function _primetel_subscriber_upgrade($uid = 0){
 		return services_error(t('Invalid User ID'));
 	}
 	$regular_user = module_invoke('user', 'load', $uid);
-	$userroles = $regular_user->roles[];
+	$userroles = $regular_user->roles;
 	$userroles[]  = 'primetel subscriber';
 	module_invoke('user', 'save', $regular_user, array('roles' => $userroles));
 	return array(t('User Account upgraded successfully'));
@@ -14,6 +14,7 @@ function _primetel_subscriber_upgrade($uid = 0){
 function primetel_subscribers_get_mappings() {
 	$resources = array();
 	$resources['people']['targeted_actions']['subscriberUpgrade'] = array(
+			'help' => 'Upgrade Regular User Account to Primetel Subscriber',
 			'access arguments' => array('primetel subscriber upgrade'),
 			'access arguments append' => FALSE,
 			'args' => array(
