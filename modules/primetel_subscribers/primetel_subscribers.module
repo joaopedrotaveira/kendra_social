@@ -1,0 +1,68 @@
+<?php
+
+function _primetel_subscriber_upgrade($uid = 0){
+	if($uid == 0){
+		return services_error(t('Invalid User ID'));
+	}
+	$regular_user = module_invoke('user', 'load', $uid);
+	$userroles = $regular_user->roles[];
+	$userroles[]  = 'primetel subscriber';
+	module_invoke('user', 'save', $regular_user, array('roles' => $userroles));
+	return array(t('User Account upgraded successfully'));
+}
+
+function primetel_subscribers_get_mappings() {
+	$resources = array();
+	$resources['people']['targeted_actions']['subscriberUpgrade'] = array(
+			'access arguments' => array('primetel subscriber upgrade'),
+			'access arguments append' => FALSE,
+			'args' => array(
+					array(
+							'name' => 'uid',
+							'description' => 'user id',
+							'source' => array('path' => '0'),
+							'type' => 'int',
+							'optional' => FALSE,
+			  )
+			),
+			'callback' => '_primetel_subscriber_upgrade',
+	);
+	return $resources;
+}
+
+/**
+ * Implementation of hook_services_resources().
+ */
+function primetel_subscribers_services_resources() {
+	$resources = primetel_subscribers_get_mappings();
+	return $resources;
+}
+
+function primetel_subscribers_permission() {
+	return array(
+			'primetel subscriber upgrade' => array(
+					'title' => t('Upgrade Primetel Subscriber'),
+					'description' => t('Add Primetel Subscriber Role to Saracen Account'),
+			),
+			'primetel premium content access' => array(
+					'title' => t('Primetel Premium Content access'),
+					'description' => t('Primetel Premium Content access granted'),
+			),
+	);
+}
+
+function primetel_subscribers_enable() {
+	$newRoles = array('primetel premium content authority');
+	foreach ($newRoles as $r){
+		if(!user_role_load_by_name($r)){
+			$role = new stdClass();
+			$role->name = $r;
+			user_role_save($role);
+			if($role->name == 'primetel premium content authority'){
+				user_role_grant_permissions($role->rid, array('primetel subscriber upgrade'));
+			} else if($role->name == 'primetel subscriber'){
+				user_role_grant_permissions($role->rid, array('primetel premium content access'));
+			}
+		}
+	}
+}

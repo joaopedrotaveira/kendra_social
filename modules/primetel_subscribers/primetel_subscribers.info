@@ -1,7 +1,6 @@
 name = Primetel Subscribers
-description = Primetel Subscribers Upgrade Features
+description = Primetel Subscribers Upgrade
 core = 7.x
-package = "Features"
 version = "7.x-1.0-dev"
 ; -------------
 ; Features
