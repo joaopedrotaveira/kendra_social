@@ -70,6 +70,7 @@ function primetel_subscribers_permission() {
 			'primetel subscriber upgrade' => array(
 					'title' => t('Upgrade Primetel Subscriber'),
 					'description' => t('Add Primetel Subscriber Role to Saracen Account'),
+					'restrict access' => TRUE,
 			),
 			'primetel premium content access' => array(
 					'title' => t('Primetel Premium Content access'),
@@ -79,7 +80,7 @@ function primetel_subscribers_permission() {
 }
 
 function primetel_subscribers_enable() {
-	$newRoles = array('primetel premium content authority');
+	$newRoles = array('primetel premium content authority', 'primetel subscriber');
 	foreach ($newRoles as $r){
 		if(!user_role_load_by_name($r)){
 			$role = new stdClass();
