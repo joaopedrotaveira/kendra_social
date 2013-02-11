@@ -33,8 +33,9 @@ function _kss_user_load_facebook_likes(&$users) {
 function _kss_user_load_facebook_friends(&$users) {
   $friends = db_query("SELECT * FROM {kendra_saracen_friends} f WHERE f.uid IN (:uids)", array(":uids" => array_keys($users)));
   foreach ($friends as $friend) {
-    /*if (REQUEST_TIME - $friend->imported <= 864000) {*/
-    if (REQUEST_TIME - $friend->imported <= 120) {
+    /*if (REQUEST_TIME - $friend->imported <= 864000) { // 10 days */
+    /*if (REQUEST_TIME - $friend->imported <= 120) { 2min */
+    if (REQUEST_TIME - $friend->imported <= 172800) { // 2 days
       $users[$friend->uid]->saracen_friends = unserialize($friend->data);
       $users[$friend->uid]->friends_last_imported = $friend->imported;
     } else {
