@@ -1,19 +1,19 @@
 <?php
 /* PLEASE NOTE: I renamed this file from the GitHub version
-because it had same name as install profile. This code needs further refactoring */
+ because it had same name as install profile. This code needs further refactoring */
 
 
 
 function _kendra_saracen_trial_mod_save_user_prefs($data) {
-	if (!in_array($data['fb_update'], array('0', '1'))) {
-	  return array('status' => 'error', 'message' => 'fb_update must be 0 or 1');
-	}
+  if (!in_array($data['fb_update'], array('0', '1'))) {
+    return array('status' => 'error', 'message' => 'fb_update must be 0 or 1');
+  }
   if (!in_array($data['get_email'], array('0', '1'))) {
-	  return array('status' => 'error', 'message' => 'get_email must be 0 or 1');
-	}
-	$edit = array('data' => array(
-  	'fb_update' => !empty($data['fb_update']),
-		'get_email' => !empty($data['get_email']),
+    return array('status' => 'error', 'message' => 'get_email must be 0 or 1');
+  }
+  $edit = array('data' => array(
+      'fb_update' => !empty($data['fb_update']),
+      'get_email' => !empty($data['get_email']),
   ));
   global $user;
   $account = user_load($user->uid);
@@ -57,7 +57,7 @@ function _kendra_saracen_save_recommend($uid = NULL, $nid = NULL, $type = 'ratin
       'stringval' => $svalue,
       'source' => $source,
       'external_id' => "{$extid}",
-    ))->execute();
+  ))->execute();
   return $id;
 }
 
@@ -67,7 +67,7 @@ function _kendra_saracen_cache_external_data($external_id, $key = 'facebook') {
   $response = drupal_http_request($url);
   if ($response->code == 200) {
     $id = db_insert('external_data_cache')->fields(
-      array('external_id' => $external_id, 'json' => $response->data)
+        array('external_id' => $external_id, 'json' => $response->data)
     )->execute();
   }
   else {
@@ -87,7 +87,7 @@ function kendra_saracen_trial_mod_cron_queue_info() {
   return array('kendra_saracen_trial' => array(
       'worker callback' => '_kendra_saracen_queue_worker',
       'time' => 180,
-    ));
+  ));
 }
 
 function _kendra_saracen_queue_worker($item) {
@@ -122,44 +122,47 @@ function _kendra_saracen_update_facebook_profile($item) {
     else {
       watchdog('fb debug', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($item, TRUE));
       $failed = TRUE;
-    }
-    if ($failed) {
-      // The line below was flooding users
-      //FIXME: _kss_notification_add('FB Error', 0, 0, $item->uid);
+      break;
     }
   }
-  _kendra_saracen_import_facebook_friend($item);
+  if ($failed) {
+    // The line below was flooding users
+    //FIXME: _kss_notification_add('FB Error', 0, 0, $item->uid);
+  }
+  else {
+    _kendra_saracen_import_facebook_friend($item);
+  }
 }
 
 function _kendra_saracen_get_facebook_friends($account, $fbu, $access_code) {
-	$data = cache_get('saracen_fb_user_friends_' . $fbu);
-	if (!empty($data->data)) {
-		return $data->data;
-	}
-	$fb = "https://graph.facebook.com/{$account->fbu}/friends?access_token={$account->key}";
-	$response = drupal_http_request($fb);
-	if ($response->code == 200) {
-		$data = json_decode($response->data);
-		cache_set('saracen_fb_user_friends_' . $fbu, $data->data, 'cache', REQUEST_TIME + 24*60*60);
-		return $data->data;
-	} else {
-		watchdog('fb friend debug2', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($account->uid, TRUE));
-	}
-	return array();
+  $data = cache_get('saracen_fb_user_friends_' . $fbu);
+  if (!empty($data->data)) {
+    return $data->data;
+  }
+  $fb = "https://graph.facebook.com/{$account->fbu}/friends?access_token={$account->key}";
+  $response = drupal_http_request($fb);
+  if ($response->code == 200) {
+    $data = json_decode($response->data);
+    cache_set('saracen_fb_user_friends_' . $fbu, $data->data, 'cache', REQUEST_TIME + 24*60*60);
+    return $data->data;
+  } else {
+    watchdog('fb friend debug2', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($account->uid, TRUE));
+  }
+  return array();
 }
 
 function _kendra_saracen_import_facebook_friend($job) {
-	$fb = "https://graph.facebook.com/{$job->fbu}/friends?access_token={$job->access_token}";
-	$response = drupal_http_request($fb);
+  $fb = "https://graph.facebook.com/{$job->fbu}/friends?access_token={$job->access_token}";
+  $response = drupal_http_request($fb);
   if ($response->code == 200) {
-	  $data = json_decode($response->data);
-	  foreach ($data->data as $friend) {
-		  $friend->connection = 'friend';
-		  _kendra_saracen_save_sparql_fb($job, $friend);
-	  }
-	} else {
-		watchdog('fb friend debug', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($job, TRUE));
-	}
+    $data = json_decode($response->data);
+    foreach ($data->data as $friend) {
+      $friend->connection = 'friend';
+      _kendra_saracen_save_sparql_fb($job, $friend);
+    }
+  } else {
+    watchdog('fb friend debug', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($job, TRUE));
+  }
 }
 
 function _kendra_saracen_save_sparql_fb($item, $like) {
@@ -169,8 +172,8 @@ function _kendra_saracen_save_sparql_fb($item, $like) {
   //_kendra_saracen_sparql_util('fblikes', $like->connection, $id_url, $data);
   db_delete('sparql_store_fblike_temp')->condition('uid', $item->uid)->condition('external_id', $like->id)->condition('connection', $like->connection)->execute();
   db_insert('sparql_store_fblike_temp')->fields(array(
-      'uid' => $item->uid, 'external_id' => $like->id, 'name' => $like->name, 'connection' => $like->connection,
-    ))->execute();
+  'uid' => $item->uid, 'external_id' => $like->id, 'name' => $like->name, 'connection' => $like->connection,
+  ))->execute();
 }
 
 function _kendra_saracen_sparql_util($store, $graph, $id_url, $data) {
@@ -188,7 +191,7 @@ function _kendra_saracen_sparql_util($store, $graph, $id_url, $data) {
 
 function _kendra_saracen_trial_mod_lookup_id($id) {
   $result = db_query("SELECT entity_id FROM {field_data_field_mediaitem_identifier}
-    WHERE field_mediaitem_identifier_value=:identifier LIMIT 1", array(':identifier' => $id));
+      WHERE field_mediaitem_identifier_value=:identifier LIMIT 1", array(':identifier' => $id));
   $nid = 0;
   foreach ($result as $record) {
     if (isset($record->entity_id)) {
@@ -208,17 +211,17 @@ function _kendra_saracen_trial_mod_default_access_callback() {
  */
 function kendra_saracen_trial_mod_menu() {
   $items['admin/kendra-dev-generate'] = array(
-    'title' => 'Kendra Dev Generate',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('_kendra_saracen_trial_dev_generate_data'),
-    'access arguments' => array('administer nodes'),
-    'type' => MENU_SUGGESTED_ITEM,
+      'title' => 'Kendra Dev Generate',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('_kendra_saracen_trial_dev_generate_data'),
+      'access arguments' => array('administer nodes'),
+      'type' => MENU_SUGGESTED_ITEM,
   );
   $items['fb-update'] = array(
-  	'title' => 'Facebook Connection debugging',
-		'page callback' => '_kss_fb_connect_debug',
-		'access arguments' => array('access content'),
-		'type' => MENU_CALLBACK,
+      'title' => 'Facebook Connection debugging',
+      'page callback' => '_kss_fb_connect_debug',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
   );
   return $items;
 }
@@ -229,11 +232,11 @@ function _kss_fb_connect_debug() {
   global $_fb_app;
   //return '<pre>' . print_r($_fb, TRUE) . "\n" . print_r($_fb_app, TRUE) . '</pre>';
 
-	/* Code sample from
-	 *  https://developers.facebook.com/blog/post/2011/05/13/how-to--handle-expired-access-tokens/
-	 */
+  /* Code sample from
+   *  https://developers.facebook.com/blog/post/2011/05/13/how-to--handle-expired-access-tokens/
+  */
 
-	$app_id = $_fb_app->apikey;
+  $app_id = $_fb_app->apikey;
   $app_secret = $_fb_app->secret;
   $my_url = url('fb-update', array('absolute' => TRUE));
   $my_url = 'https://cms.saracen-p2p.eu/fb-update';
@@ -247,12 +250,12 @@ function _kss_fb_connect_debug() {
     // known valid access token stored in a database
     $access_token = $account->key;
   } else {
-	  $access_token = '';
+    $access_token = '';
   }
 
   if (isset($_REQUEST['key'])) {
-	  //print '<pre>' . print_r(get_defined_vars(), TRUE) . '</pre>';
-	  return;
+    //print '<pre>' . print_r(get_defined_vars(), TRUE) . '</pre>';
+    return;
   }
 
   $code = isset($_REQUEST["code"]) ? $_REQUEST['code'] : NULL;
@@ -261,9 +264,9 @@ function _kss_fb_connect_debug() {
   //and can get a valid access_token.
   if (isset($code)) {
     $token_url="https://graph.facebook.com/oauth/access_token?client_id="
-      . $app_id . "&redirect_uri=" . urlencode($my_url)
-      . "&client_secret=" . $app_secret
-      . "&code=" . $code . "&display=popup";
+        . $app_id . "&redirect_uri=" . urlencode($my_url)
+        . "&client_secret=" . $app_secret
+        . "&code=" . $code . "&display=popup";
     $response = file_get_contents($token_url);
     $params = null;
     parse_str($response, $params);
@@ -272,20 +275,20 @@ function _kss_fb_connect_debug() {
 
   // Attempt to query the graph:
   $graph_url = "https://graph.facebook.com/me?"
-    . "access_token=" . $access_token;
+      . "access_token=" . $access_token;
   $response = _curl_get_file_contents($graph_url);
   $decoded_response = json_decode($response);
   //echo $graph_url; die();
   // Check for errors
   if (!empty($decoded_response->error)) {
-  // check to see if this is an oAuth error:
+    // check to see if this is an oAuth error:
     if ($decoded_response->error->type== "OAuthException") {
       // Retrieving a valid access token.
       $dialog_url= "https://www.facebook.com/dialog/oauth?"
-        . "client_id=" . $app_id
-        . "&redirect_uri=" . urlencode($my_url);
+          . "client_id=" . $app_id
+          . "&redirect_uri=" . urlencode($my_url);
       echo("<script> top.location.href='" . $dialog_url
-      . "'</script>");
+          . "'</script>");
       return;
     }
     else {
@@ -294,26 +297,26 @@ function _kss_fb_connect_debug() {
     }
   }
   else {
-	  // no error - we have an access token...
-	  // Case 1: Valid saracen user has updated access token
-	  if (!empty($account->fbu)) {
-  	  $res = db_update('fb_user_app')
-	      ->fields(array('session_key' => $access_token))
-	      ->condition('fbu', $account->fbu)
-	      ->execute();
+    // no error - we have an access token...
+    // Case 1: Valid saracen user has updated access token
+    if (!empty($account->fbu)) {
+      $res = db_update('fb_user_app')
+      ->fields(array('session_key' => $access_token))
+      ->condition('fbu', $account->fbu)
+      ->execute();
       //echo('yes: ' . $access_token);
-  	} else if (!empty($decoded_response->id)) {
-	    // Case 2: FB user has updated access token
-		  $res = db_update('fb_user_app')
-	      ->fields(array('session_key' => $access_token))
-	      ->condition('fbu', $decoded_response->id)
-	      ->execute();
+    } else if (!empty($decoded_response->id)) {
+      // Case 2: FB user has updated access token
+      $res = db_update('fb_user_app')
+      ->fields(array('session_key' => $access_token))
+      ->condition('fbu', $decoded_response->id)
+      ->execute();
       //echo('yes2: ' . $access_token);
     }
     drupal_set_message("Your Facebook access token has been updated");
   }
   //echo('a: ' . $access_token);
-	//print '<pre>' . print_r(get_defined_vars(), TRUE) . '</pre>';
+  //print '<pre>' . print_r(get_defined_vars(), TRUE) . '</pre>';
   //drupal_goto('fb-update', array('query' => array('key' => $access_token)));
   drupal_goto('user');
 }
@@ -330,162 +333,162 @@ function _curl_get_file_contents($URL) {
 }
 
 function _kendra_saracen_trial_dev_generate_data($form, &$form_state) {
-	$form['user_ratings'] = array(
-		'#type' => 'checkbox',
-		'#title' => 'Generate likes/ratings for 50% of content for each user',
-		'#default_value' => FALSE,
-	);
-	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => 'Submit',
-	);
-	return $form;
+  $form['user_ratings'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'Generate likes/ratings for 50% of content for each user',
+      '#default_value' => FALSE,
+  );
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => 'Submit',
+  );
+  return $form;
 }
 function _kendra_saracen_trial_dev_generate_data_submit($form, &$form_state) {
-	if (isset($form_state['values']['user_ratings']) && $form_state['values']['user_ratings'] == 1) {
-		$user_query = new EntityFieldQuery();
-		$user_query->entityCondition('entity_type', 'user');
-		$user_query->propertyCondition('status', 1);
-		$accounts = $user_query->execute();
-		$uids = array_keys($accounts['user']);
+  if (isset($form_state['values']['user_ratings']) && $form_state['values']['user_ratings'] == 1) {
+    $user_query = new EntityFieldQuery();
+    $user_query->entityCondition('entity_type', 'user');
+    $user_query->propertyCondition('status', 1);
+    $accounts = $user_query->execute();
+    $uids = array_keys($accounts['user']);
 
-		$node_query = new EntityFieldQuery();
-		$node_query->entityCondition('entity_type', 'node');
-		$node_query->entityCondition('bundle', 'mediaitem');
-		$node_query->propertyCondition('status', 1);
-		$items = $node_query->execute();
-		$nids = array_keys($items['node']);
-		$nid_count = count($nids);
+    $node_query = new EntityFieldQuery();
+    $node_query->entityCondition('entity_type', 'node');
+    $node_query->entityCondition('bundle', 'mediaitem');
+    $node_query->propertyCondition('status', 1);
+    $items = $node_query->execute();
+    $nids = array_keys($items['node']);
+    $nid_count = count($nids);
 
-		foreach ($uids as $uid) {
-			shuffle($nids);
-			$selected = array_slice($nids, 0, $nid_count / 2);
-			foreach ($selected as $nid) {
-				$value = rand(50, 100);
-			  _kendra_saracen_trial_mod_add_rate_mediaitem($nid, array('value' => $value), FALSE, $uid);
-			  drupal_set_message("User {$uid} rates {$nid} with score {$value}");
-			}
-		}
-	}
+    foreach ($uids as $uid) {
+      shuffle($nids);
+      $selected = array_slice($nids, 0, $nid_count / 2);
+      foreach ($selected as $nid) {
+        $value = rand(50, 100);
+        _kendra_saracen_trial_mod_add_rate_mediaitem($nid, array('value' => $value), FALSE, $uid);
+        drupal_set_message("User {$uid} rates {$nid} with score {$value}");
+      }
+    }
+  }
 }
 
 function _kendra_saracen_trial_mod_start_watching_mediaitem($id) {
-	global $user;
+  global $user;
   // Save into recommender
   // TODO: only save if watched whole thing?
   $nid = _kendra_saracen_trial_mod_lookup_id($id);
   _kendra_saracen_save_recommend($user->uid, $nid, $type = 'watch', NULL, FALSE, NULL, 'implicit');
 
 
-	// user started watching - update previous start times missing end times
-	// set stop = start for these events (i.e. player crashes)
-	db_update('kendra_mediaitem_watch')
-		->expression('stop', 'start')
-		->condition('stop', NULL)
-		->condition('media_id', $id)
-		->condition('uid', $user->uid)
-		->execute();
-	return _kendra_saracen_trial_mod_save_live_event($user, $id, REQUEST_TIME, NULL);
+  // user started watching - update previous start times missing end times
+  // set stop = start for these events (i.e. player crashes)
+  db_update('kendra_mediaitem_watch')
+  ->expression('stop', 'start')
+  ->condition('stop', NULL)
+  ->condition('media_id', $id)
+  ->condition('uid', $user->uid)
+  ->execute();
+  return _kendra_saracen_trial_mod_save_live_event($user, $id, REQUEST_TIME, NULL);
 }
 function _kendra_saracen_trial_mod_stop_watching_mediaitem($id) {
-	global $user;
-	$closed = db_update('kendra_mediaitem_watch')
-		->fields(array(
-			'stop' => REQUEST_TIME,
-		))
-		->condition('stop', NULL)
-		->condition('media_id', $id)
-		->condition('uid', $user->uid)
-		->execute();
-	return $closed;
+  global $user;
+  $closed = db_update('kendra_mediaitem_watch')
+  ->fields(array(
+      'stop' => REQUEST_TIME,
+  ))
+  ->condition('stop', NULL)
+  ->condition('media_id', $id)
+  ->condition('uid', $user->uid)
+  ->execute();
+  return $closed;
 }
 
 function _kendra_saracen_trial_mod_get_live_events($account) {
-	$results = db_select('kendra_mediaitem_watch', 'w')
-		->fields('w')
-		->execute();
-	$output = array();
-	foreach ($results as $r) {
-		$output[] = $r;
-	}
-	return $output;
+  $results = db_select('kendra_mediaitem_watch', 'w')
+  ->fields('w')
+  ->execute();
+  $output = array();
+  foreach ($results as $r) {
+    $output[] = $r;
+  }
+  return $output;
 }
 
 function _kendra_saracen_trial_mod_save_live_event($account, $id, $start = NULL, $stop = NULL) {
-	$result = db_insert('kendra_mediaitem_watch')->fields(array(
-	  'uid' => $account->uid,
-	  'start' => $start,
-	  'stop' => $stop,
-		'media_id' => $id,
-	))->execute();
-	return $result;
+  $result = db_insert('kendra_mediaitem_watch')->fields(array(
+      'uid' => $account->uid,
+      'start' => $start,
+      'stop' => $stop,
+      'media_id' => $id,
+  ))->execute();
+  return $result;
 }
 
 
 function _kendra_saracen_trial_mod_media_recommendations($id) {
-	$nid = _kendra_saracen_trial_mod_lookup_id($id);
-	
-	if (empty($nid)) {
-		return array('status' => 'error', 'message' => 'Media item ID not found');
-	}
-	
-	$output = array();
-	
-	$inner_query = "";
-	
-	$url = "http://localhost:7080/similarity/{$nid}?howMany=10";
-	$response = drupal_http_request($url);
-	if ($response->code == 200) {
-		$recommendations = json_decode($response->data);
-		//watchdog('mahout', 'Mahout Data: ' . print_r($response, TRUE) . ' for ' . print_r($nid, TRUE));
-		try {
-			foreach ($recommendations as $recommendation) {
-				list($item_id, $weight) = $recommendation;
-				if(empty($inner_query)){
-					$inner_query .= "( SELECT {$item_id} AS recommended_nid, {$weight} AS weight ";
-				} else {
-					$inner_query .= " UNION SELECT {$item_id}, {$weight} ";
-				}
-			}
-			$inner_query .= " ) AS r ";
-		} catch (Exception $e){
-			watchdog_exception('mahout', $e);
-		}
-	} else {
-		watchdog('mahout', 'failed to contact mahout: ' . print_r($response, TRUE) . ' for ' . print_r($uid, TRUE));
-		return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
-	}
+  $nid = _kendra_saracen_trial_mod_lookup_id($id);
 
-	$query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
-	$query .= "INNER JOIN ".$inner_query." ON n.nid = r.recommended_nid ";
-	$query .= "WHERE n.status=1 AND n.nid != :nid ";
-	$query .= "ORDER BY r.weight DESC;";
-	
-	//watchdog('mahout','Query related items: '.$query);
-	
-	try {
-		$res = db_query($query, array(':nid' => $nid));	
-		$res = $res->fetchAll();
-		foreach ($res as $node) {
-			$output[$node->recommended_nid] = _kendra_saracen_trial_mod_get_mediaitem($node->recommended_nid);
-		}
-	} catch (Exception $e) {
-		watchdog_exception('mahout', $e);
-	}
-	return $output;
-	
-	/*if (!empty($nid)) {
-		$res = db_query("SELECT DISTINCT recommended_nid
-				FROM {kendra_match_recommender_out_item_to_item} kendra_match_recommender_out_item_to_item
-				INNER JOIN {node} node ON node.nid=kendra_match_recommender_out_item_to_item.recommended_nid
-				WHERE node.status=1 AND node.nid != :nid",
-				array(':nid' => $nid));
-		$res = $res->fetchAll();
-		foreach ($res as $node) {
-			$output[$node->recommended_nid] = _kendra_saracen_trial_mod_get_mediaitem($node->recommended_nid);
-		}
-		return $output;
-	} else {
-		return array('status' => 'error', 'message' => 'Media item ID not found');
-	}*/
+  if (empty($nid)) {
+    return array('status' => 'error', 'message' => 'Media item ID not found');
+  }
+
+  $output = array();
+
+  $inner_query = "";
+
+  $url = "http://localhost:7080/similarity/{$nid}?howMany=10";
+  $response = drupal_http_request($url);
+  if ($response->code == 200) {
+    $recommendations = json_decode($response->data);
+    //watchdog('mahout', 'Mahout Data: ' . print_r($response, TRUE) . ' for ' . print_r($nid, TRUE));
+    try {
+      foreach ($recommendations as $recommendation) {
+        list($item_id, $weight) = $recommendation;
+        if(empty($inner_query)){
+          $inner_query .= "( SELECT {$item_id} AS recommended_nid, {$weight} AS weight ";
+        } else {
+          $inner_query .= " UNION SELECT {$item_id}, {$weight} ";
+        }
+      }
+      $inner_query .= " ) AS r ";
+    } catch (Exception $e){
+      watchdog_exception('mahout', $e);
+    }
+  } else {
+    watchdog('mahout', 'failed to contact mahout: ' . print_r($response, TRUE) . ' for ' . print_r($uid, TRUE));
+    return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
+  }
+
+  $query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
+  $query .= "INNER JOIN ".$inner_query." ON n.nid = r.recommended_nid ";
+  $query .= "WHERE n.status=1 AND n.nid != :nid ";
+  $query .= "ORDER BY r.weight DESC;";
+
+  //watchdog('mahout','Query related items: '.$query);
+
+  try {
+    $res = db_query($query, array(':nid' => $nid));
+    $res = $res->fetchAll();
+    foreach ($res as $node) {
+      $output[$node->recommended_nid] = _kendra_saracen_trial_mod_get_mediaitem($node->recommended_nid);
+    }
+  } catch (Exception $e) {
+    watchdog_exception('mahout', $e);
+  }
+  return $output;
+
+  /*if (!empty($nid)) {
+   $res = db_query("SELECT DISTINCT recommended_nid
+       FROM {kendra_match_recommender_out_item_to_item} kendra_match_recommender_out_item_to_item
+       INNER JOIN {node} node ON node.nid=kendra_match_recommender_out_item_to_item.recommended_nid
+       WHERE node.status=1 AND node.nid != :nid",
+       array(':nid' => $nid));
+  $res = $res->fetchAll();
+  foreach ($res as $node) {
+  $output[$node->recommended_nid] = _kendra_saracen_trial_mod_get_mediaitem($node->recommended_nid);
+  }
+  return $output;
+  } else {
+  return array('status' => 'error', 'message' => 'Media item ID not found');
+  }*/
 }
