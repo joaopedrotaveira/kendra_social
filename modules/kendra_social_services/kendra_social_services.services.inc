@@ -18,43 +18,43 @@ function kendra_social_services_default_services_endpoint() {
   $endpoint->server = 'rest_server';
   $endpoint->path = 'saracen/0.1';
   $endpoint->authentication = array(
-    'services' => 'services',
+      'services' => 'services',
   );
   $endpoint->server_settings = array(
-    'formatters' => array(
-      'bencode' => TRUE,
-      'json' => TRUE,
-      'php' => TRUE,
-      'rss' => TRUE,
-      'xml' => TRUE,
-      'yaml' => TRUE,
-      'jsonp' => TRUE,
-    ),
-    'parsers' => array(
-      'application/json' => TRUE,
-      'application/vnd.php.serialized' => TRUE,
-      'application/x-www-form-urlencoded' => TRUE,
-      'application/x-yaml' => TRUE,
-      'multipart/form-data' => TRUE,
-    ),
+      'formatters' => array(
+          'bencode' => TRUE,
+          'json' => TRUE,
+          'php' => TRUE,
+          'rss' => TRUE,
+          'xml' => TRUE,
+          'yaml' => TRUE,
+          'jsonp' => TRUE,
+      ),
+      'parsers' => array(
+          'application/json' => TRUE,
+          'application/vnd.php.serialized' => TRUE,
+          'application/x-www-form-urlencoded' => TRUE,
+          'application/x-yaml' => TRUE,
+          'multipart/form-data' => TRUE,
+      ),
   );
 
   /**
-  * all service resources defined by KSS are enabled by default
+   * all service resources defined by KSS are enabled by default
   */
   $endpoint_resources = array();
   $resources = kendra_social_services_services_get_mappings();
 
   foreach($resources as $controller => $resource) {
-      foreach($resource as $resource_type => $resource_set) {
-          if (in_array($resource_type, array('operations', 'actions', 'relationships', 'targeted_actions'))) {
-              foreach($resource_set as $action => $resource_array) {
-                  if (!isset($resource_array['enabled']) || $resource_array['enabled']) {
-                      $endpoint_resources[$controller][$resource_type][$action]['enabled'] = TRUE;
-                  }
-              }
+    foreach($resource as $resource_type => $resource_set) {
+      if (in_array($resource_type, array('operations', 'actions', 'relationships', 'targeted_actions'))) {
+        foreach($resource_set as $action => $resource_array) {
+          if (!isset($resource_array['enabled']) || $resource_array['enabled']) {
+            $endpoint_resources[$controller][$resource_type][$action]['enabled'] = TRUE;
           }
+        }
       }
+    }
   }
   $endpoint->resources = $endpoint_resources;
   $endpoint->debug = 1;

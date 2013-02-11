@@ -15,10 +15,10 @@ include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'kendra_social_servic
 
 // Takes an array of user objects and adds in recommendation information
 function _kss_user_load_recommendations(&$users) {
-	$recommendation = db_query("SELECT * FROM {kendra_match_recommender_out_tags} t WHERE t.uid IN (:uids)", array(':uids' => array_keys($users)));
-	foreach ($recommendation as $record) {
-		$users[$record->uid]->profile_tags[] = array('name' => $record->tag, 'score' => $record->weight, 'type' => $record->source);
-	}
+  $recommendation = db_query("SELECT * FROM {kendra_match_recommender_out_tags} t WHERE t.uid IN (:uids)", array(':uids' => array_keys($users)));
+  foreach ($recommendation as $record) {
+    $users[$record->uid]->profile_tags[] = array('name' => $record->tag, 'score' => $record->weight, 'type' => $record->source);
+  }
 }
 
 // Takes an array of user objects and adds in user FB likes
@@ -31,70 +31,70 @@ function _kss_user_load_facebook_likes(&$users) {
 
 // Takes an array of user objects and adds in user's FB friends
 function _kss_user_load_facebook_friends(&$users) {
-	$friends = db_query("SELECT * FROM {kendra_saracen_friends} f WHERE f.uid IN (:uids)", array(":uids" => array_keys($users)));
-	foreach ($friends as $friend) {
-		/*if (REQUEST_TIME - $friend->imported <= 864000) {*/
-		if (REQUEST_TIME - $friend->imported <= 120) {
-			$users[$friend->uid]->saracen_friends = unserialize($friend->data);
-			$users[$friend->uid]->friends_last_imported = $friend->imported;
-		} else {
-			db_query("DELETE FROM {kendra_saracen_friends} WHERE uid = :uid", array(":uid" => intval($friend->uid)));
-		}
-	}
-	foreach ($users as $account) {
-		if (empty($users[$account->uid]->saracen_friends)) {
-			$users[$account->uid]->saracen_friends = array();
+  $friends = db_query("SELECT * FROM {kendra_saracen_friends} f WHERE f.uid IN (:uids)", array(":uids" => array_keys($users)));
+  foreach ($friends as $friend) {
+    /*if (REQUEST_TIME - $friend->imported <= 864000) {*/
+    if (REQUEST_TIME - $friend->imported <= 120) {
+      $users[$friend->uid]->saracen_friends = unserialize($friend->data);
+      $users[$friend->uid]->friends_last_imported = $friend->imported;
+    } else {
+      db_query("DELETE FROM {kendra_saracen_friends} WHERE uid = :uid", array(":uid" => intval($friend->uid)));
+    }
+  }
+  foreach ($users as $account) {
+    if (empty($users[$account->uid]->saracen_friends)) {
+      $users[$account->uid]->saracen_friends = array();
 
-			// Load twitter friends
-			$users[$account->uid]->twitter_friends = _kss_user_get_twitter_friends($account);
-			foreach($users[$account->uid]->twitter_friends as $twitfid) {
-				$tmp_name = db_query('SELECT name FROM {users} WHERE uid = :uid',
-						array(':uid' => $twitfid));
-				$users[$account->uid]->saracen_friends[$twitfid] = (object) array(
-						'id' => $twitfid,
-						'name' => $tmp_name->fetchField(),
-						'sources' => array('twitter'),
-						);
-			}
+      // Load twitter friends
+      $users[$account->uid]->twitter_friends = _kss_user_get_twitter_friends($account);
+      foreach($users[$account->uid]->twitter_friends as $twitfid) {
+        $tmp_name = db_query('SELECT name FROM {users} WHERE uid = :uid',
+            array(':uid' => $twitfid));
+        $users[$account->uid]->saracen_friends[$twitfid] = (object) array(
+            'id' => $twitfid,
+            'name' => $tmp_name->fetchField(),
+            'sources' => array('twitter'),
+        );
+      }
 
-			if (isset($account->fbu) && isset($account->key)) {
-				$friends = _kendra_saracen_get_facebook_friends($account, $account->fbu, $account->key);
-				$users[$account->uid]->facebook_friends = array();
-				if (is_array($friends)) {
-					foreach ($friends as $friend) {
-						$users[$account->uid]->facebook_friends[$friend->id] = $friend->name;
-					}
-					if (!empty($users[$account->uid]->facebook_friends)) {
-						$saracen_friends = db_query("SELECT u.uid, u.fbu FROM {fb_user} u WHERE fbu IN (:fbuids)",
-								array(':fbuids' => array_keys($users[$account->uid]->facebook_friends)));
-						foreach ($saracen_friends as $sfriend) {
-							if (empty($users[$account->uid]->saracen_friends[$sfriend->uid])) {
-								$users[$account->uid]->saracen_friends[$sfriend->uid] = (object) array(
-										'id' => $sfriend->uid,
-										'name' => $users[$account->uid]->facebook_friends[$sfriend->fbu],
-										'sources' => array('facebook'),
-										);
-							} else {
-								$users[$account->uid]->saracen_friends[$sfriend->uid]->sources[] = 'facebook';
-							}
-						}
-					}
-					/*unset($users[$account->uid]->facebook_friends);*/
-				} else {
-					$users[$account->uid]->facebook_friends = $friends;
-				}
-			}
-			if (!empty($users[$account->uid]->saracen_friends)) {
-				db_query("INSERT INTO {kendra_saracen_friends} VALUES (:uid, :val, :imported)", array(
-							':uid' => $account->uid,
-							':val' => serialize($users[$account->uid]->saracen_friends),
-							':imported' => REQUEST_TIME,
-							));
-			} else {
-				$users[$account->uid]->fb_error = TRUE;
-			}
-		}
-	}
+      if (isset($account->fbu) && isset($account->key)) {
+        $friends = _kendra_saracen_get_facebook_friends($account, $account->fbu, $account->key);
+        $users[$account->uid]->facebook_friends = array();
+        if (is_array($friends)) {
+          foreach ($friends as $friend) {
+            $users[$account->uid]->facebook_friends[$friend->id] = $friend->name;
+          }
+          if (!empty($users[$account->uid]->facebook_friends)) {
+            $saracen_friends = db_query("SELECT u.uid, u.fbu FROM {fb_user} u WHERE fbu IN (:fbuids)",
+                array(':fbuids' => array_keys($users[$account->uid]->facebook_friends)));
+            foreach ($saracen_friends as $sfriend) {
+              if (empty($users[$account->uid]->saracen_friends[$sfriend->uid])) {
+                $users[$account->uid]->saracen_friends[$sfriend->uid] = (object) array(
+                    'id' => $sfriend->uid,
+                    'name' => $users[$account->uid]->facebook_friends[$sfriend->fbu],
+                    'sources' => array('facebook'),
+                );
+              } else {
+                $users[$account->uid]->saracen_friends[$sfriend->uid]->sources[] = 'facebook';
+              }
+            }
+          }
+          /*unset($users[$account->uid]->facebook_friends);*/
+        } else {
+          $users[$account->uid]->facebook_friends = $friends;
+        }
+      }
+      if (!empty($users[$account->uid]->saracen_friends)) {
+        db_query("INSERT INTO {kendra_saracen_friends} VALUES (:uid, :val, :imported)", array(
+        ':uid' => $account->uid,
+        ':val' => serialize($users[$account->uid]->saracen_friends),
+        ':imported' => REQUEST_TIME,
+        ));
+      } else {
+        $users[$account->uid]->fb_error = TRUE;
+      }
+    }
+  }
 }
 
 // Takes an array of users and loads their boxes
@@ -109,12 +109,12 @@ function _kss_user_load_boxes(&$users) {
 function kendra_social_services_user_load($users) {
 
   // Load tags from recommender output table
-	_kss_user_load_recommendations($users);
+  _kss_user_load_recommendations($users);
 
   // Queue up an update of the Facebook data to run on cron
   $fb_users = db_query("SELECT u.uid, u.fbu, a.session_key FROM {fb_user_app} a
-	  INNER JOIN {fb_user} u ON a.fbu = u.fbu WHERE uid IN (:uids)",
-    array(':uids' => array_keys($users))
+      INNER JOIN {fb_user} u ON a.fbu = u.fbu WHERE uid IN (:uids)",
+      array(':uids' => array_keys($users))
   );
   foreach ($fb_users as $fbuser) {
     $users[$fbuser->uid]->fbu = $fbuser->fbu;
@@ -142,10 +142,10 @@ function kendra_social_services_user_load($users) {
 
 
   foreach ($users as $uid => $account) {
-	  $users[$account->uid]->saracen_friends = (array) $users[$account->uid]->saracen_friends;
-	  foreach ((array)$users[$uid]->saracen_friends as $fid => $friend) {
-		  $users[$uid]->saracen_friends[$fid]->boxes = _kendra_social_albums_index_fetch($fid);
-	  }
+    $users[$account->uid]->saracen_friends = (array) $users[$account->uid]->saracen_friends;
+    foreach ((array)$users[$uid]->saracen_friends as $fid => $friend) {
+      $users[$uid]->saracen_friends[$fid]->boxes = _kendra_social_albums_index_fetch($fid);
+    }
 
     // Remove unneeded info from user object
     unset($users[$uid]->rdf_mapping);
@@ -153,28 +153,28 @@ function kendra_social_services_user_load($users) {
     unset($users[$uid]->fb_likes);
     unset($users[$uid]->fb_music);
     unset($users[$uid]->fb_movies);
-    
+
     unset($users[$uid]->key);
   }
 }
 
 function _kss_user_get_twitter_friends($account) {
   $twitter_uid = db_query("SELECT twitter_uid FROM {twitter_account}
-    WHERE uid = :uid LIMIT 1", array(':uid' => $account->uid))->fetchField();
+      WHERE uid = :uid LIMIT 1", array(':uid' => $account->uid))->fetchField();
   if (!empty($twitter_uid)) {
     module_load_include('inc', 'twitter');
     $twitter_account = twitter_account_load($twitter_uid);
     $auth = $twitter_account->get_auth();
     $twitter = new TwitterOAuth(
-      variable_get('twitter_consumer_key', ''),
-      variable_get('twitter_consumer_secret', ''),
-      $auth['oauth_token'], $auth['oauth_token_secret']);
+        variable_get('twitter_consumer_key', ''),
+        variable_get('twitter_consumer_secret', ''),
+        $auth['oauth_token'], $auth['oauth_token_secret']);
     $params = array('screen_name' => $twitter_account->screen_name);
     $url = 'http://api.twitter.com/1/friends/ids.json';
     $twitter_result = $twitter->auth_request($url, $params, 'GET');
     $twitter_lists[$account->uid] = json_decode($twitter_result);
     $twitter_friends = db_query("SELECT uid FROM {twitter_account}
-      WHERE twitter_uid IN (:tuids)", array(':tuids' => $twitter_lists[$account->uid]->ids));
+        WHERE twitter_uid IN (:tuids)", array(':tuids' => $twitter_lists[$account->uid]->ids));
     return array_keys($twitter_friends->fetchAllAssoc('uid'));
   }
   return array();
@@ -183,73 +183,73 @@ function _kss_user_get_twitter_friends($account) {
 function _kss_user_load_twitter_data(&$users, $account) {
   static $twitter_lists;
   if (!isset($twitter_lists[$account->uid])) {
-		$twitter_uid = db_query("SELECT twitter_uid FROM {twitter_account}
-      WHERE uid = :uid", array(':uid' => $account->uid))->fetchField();
-		if (!empty($twitter_uid)) {
-		  module_load_include('inc', 'twitter');
-  	  $twitter_account = twitter_account_load($twitter_uid);
-		  $auth = $twitter_account->get_auth();
-	    $twitter = new TwitterOAuth(
-				variable_get('twitter_consumer_key', ''),
-        variable_get('twitter_consumer_secret', ''),
-				$auth['oauth_token'], $auth['oauth_token_secret']);
+    $twitter_uid = db_query("SELECT twitter_uid FROM {twitter_account}
+        WHERE uid = :uid", array(':uid' => $account->uid))->fetchField();
+    if (!empty($twitter_uid)) {
+      module_load_include('inc', 'twitter');
+      $twitter_account = twitter_account_load($twitter_uid);
+      $auth = $twitter_account->get_auth();
+      $twitter = new TwitterOAuth(
+          variable_get('twitter_consumer_key', ''),
+          variable_get('twitter_consumer_secret', ''),
+          $auth['oauth_token'], $auth['oauth_token_secret']);
       $params = array('screen_name' => $twitter_account->screen_name);
-			$url = 'http://api.twitter.com/1/friends/ids.json';
-		  //$twitter_lists[$account->uid] = '<pre>' . print_r($twitter, TRUE) . '</pre>';
+      $url = 'http://api.twitter.com/1/friends/ids.json';
+      //$twitter_lists[$account->uid] = '<pre>' . print_r($twitter, TRUE) . '</pre>';
       $twitter_result = $twitter->auth_request($url, $params, 'GET');
-			$twitter_lists[$account->uid] = json_decode($twitter_result);
+      $twitter_lists[$account->uid] = json_decode($twitter_result);
       //$twitter_lists[$account->uid] = $twitter->call('friends/ids', $params, 'GET');
-		  //$users[$account->uid]->twitter_verify = $twitter->verify_credentials();
-		  //$users[$account->uid]->twitter_auth = $auth;
+      //$users[$account->uid]->twitter_verify = $twitter->verify_credentials();
+      //$users[$account->uid]->twitter_auth = $auth;
     } else {
-			$twitter_lists[$account->uid] = array();
-		}
+      $twitter_lists[$account->uid] = array();
+    }
   }
   if (isset($twitter_lists[$account->uid]->ids)) {
-	  $users[$account->uid]->twitter_friends = $twitter_lists[$account->uid]->ids;
-	  $saracen_friends = db_query("SELECT t.twitter_uid, t.uid FROM {twitter_account} t WHERE t.twitter_uid IN (:tuids)",
-	    array(':tuids' => $users[$account->uid]->twitter_friends)
-	  );
-		static $twitter_names;
-		// TODO: more robust method of looking up twitter friend names
-		if ($account->uid == 27) {
-		  $url = 'http://api.twitter.com/1/users/lookup.json';
-		  $params = array('user_id' => implode(',', array_slice($twitter_lists[$account->uid]->ids, 0, 100)));
-			try {
-				$twitter_debug = json_decode($twitter->auth_request($url, $params, 'POST'));
-				if (is_array($twitter_debug)) {
-					foreach ($twitter_debug as $twit) {
-						$twitter_names[$twit->id] = $twit->screen_name;
-					}
-				}
-			} catch (Exception $e) {
-				$users[$account->uid]->twitter_debug = $e->__toString();
-			}
-		}
-	  foreach ($saracen_friends as $sfriend) {
-		  if (isset($users[$account->uid]->saracen_friends[$sfriend->uid])) {
-			  $users[$account->uid]->saracen_friends[$sfriend->uid]->sources[] = 'twitter';
-			} else {
-				if (!isset($twitter_names[$sfriend->twitter_uid])) {
-				  $users[$account->uid]->saracen_friends[$sfriend->uid]->twitter_name = $twitter_names[$sfriend->twitter_uid];
-					//$twitter_names[$sfriend->twitter_uid] = !empty($twitname) ? $twitname : 'unknown';
-				}
-				$users[$account->uid]->saracen_friends[$sfriend->uid] = (object) array(
-					'id' => $sfriend->uid,
-					'name' => isset($twitter_names[$sfriend->twitter_uid]) ? $twitter_names[$sfriend->twitter_uid] : 'unknown',
-					'sources' => array('twitter'),
-				);
-			}
-	  }
+    $users[$account->uid]->twitter_friends = $twitter_lists[$account->uid]->ids;
+    $saracen_friends = db_query("SELECT t.twitter_uid, t.uid FROM {twitter_account} t WHERE t.twitter_uid IN (:tuids)",
+        array(':tuids' => $users[$account->uid]->twitter_friends)
+    );
+    static $twitter_names;
+    // TODO: more robust method of looking up twitter friend names
+    if ($account->uid == 27) {
+      $url = 'http://api.twitter.com/1/users/lookup.json';
+      $params = array('user_id' => implode(',', array_slice($twitter_lists[$account->uid]->ids, 0, 100)));
+      try {
+        $twitter_debug = json_decode($twitter->auth_request($url, $params, 'POST'));
+        if (is_array($twitter_debug)) {
+          foreach ($twitter_debug as $twit) {
+            $twitter_names[$twit->id] = $twit->screen_name;
+          }
+        }
+      } catch (Exception $e) {
+        $users[$account->uid]->twitter_debug = $e->__toString();
+      }
+    }
+    foreach ($saracen_friends as $sfriend) {
+      if (isset($users[$account->uid]->saracen_friends[$sfriend->uid])) {
+        $users[$account->uid]->saracen_friends[$sfriend->uid]->sources[] = 'twitter';
+      } else {
+        if (!isset($twitter_names[$sfriend->twitter_uid])) {
+          $users[$account->uid]->saracen_friends[$sfriend->uid]->twitter_name = $twitter_names[$sfriend->twitter_uid];
+          //$twitter_names[$sfriend->twitter_uid] = !empty($twitname) ? $twitname : 'unknown';
+        }
+        $users[$account->uid]->saracen_friends[$sfriend->uid] = (object) array(
+            'id' => $sfriend->uid,
+            'name' => isset($twitter_names[$sfriend->twitter_uid]) ? $twitter_names[$sfriend->twitter_uid] : 'unknown',
+            'sources' => array('twitter'),
+        );
+      }
+    }
   }
 }
 
 function kendra_social_services_permission() {
   return array(
-    'access kendra social connect' => array(
-      'title' => t('Access Kendra Social Connect services'),
-      'description' => t('Perform social connect operations via the API'),
-    ),
+      'access kendra social connect' => array(
+          'title' => t('Access Kendra Social Connect services'),
+          'description' => t('Perform social connect operations via the API'),
+      ),
   );
 }
 
@@ -262,7 +262,7 @@ function kendra_social_services_services_resources() {
 }
 
 function _kendra_social_services_user_retrieve_access_check($op = 'view', $args = array()) {
-    return TRUE;
+  return TRUE;
   if ($args[0] == '@me') {
     return TRUE;
   }
