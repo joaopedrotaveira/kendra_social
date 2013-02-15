@@ -358,7 +358,7 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
   $premium_access = user_access("primetel premium content access");
   $premium_user = user_load_by_name("Primetel");
   
-  watchdog('List Items', 'verifying access for: '.print_r($premium_user));
+  watchdog('List Items', 'verifying access for: '.print_r($premium_user, TRUE));
   
   $offset = intval($page) * intval($page_size);
 
