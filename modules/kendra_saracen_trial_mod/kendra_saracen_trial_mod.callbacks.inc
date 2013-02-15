@@ -355,12 +355,17 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     $page_size = 10;
   }
 
-  $premium_access = user_access("primetel premium content access");
+  //$premium_access = user_access("primetel premium content access");
+  if(user_access("primetel premium content access")){
+    watchdog('Premium', "premium granted");
+  }
+  else {
+    watchdog('Premium', "premium denied");
+  }
   $premium_user = user_load_by_name("Primetel");
   $premium_uid = $premium_user->uid;
   
-  watchdog('List Items', 'verifying access for: '.$uid.' to content of '.$premium_uid.' is:');
-  watchdog('List Items2', print_r($premium_access, TRUE));
+  watchdog('List Items', 'verifying access for: '.$uid.' to content of '.$premium_uid);
   
   $offset = intval($page) * intval($page_size);
 
