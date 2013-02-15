@@ -49,7 +49,7 @@ function _kendra_saracen_trial_mod_annotate_mediaitem($id, $data) {
 
   _kss_notification_add($data['type'], $org->nid, $user->uid, $org->uid, $node->nid);
   return array('status' => 'OK', 'message' => 'created user annotation for ' . $org->title,
-    'type' => $data['type'],
+      'type' => $data['type'],
   );
 }
 
@@ -67,7 +67,7 @@ function _kendra_saracen_trial_mod_delete_mediaitem($id) {
     return array('status' => 'error', 'message' => 'unknown identifier');
   }
   if (node_access('delete', $node, $user)) {
-	  node_delete($nid);
+    node_delete($nid);
     return array('status' => 'ok', 'message' => 'deleted media item ' . $title);
   }
   return array('status' => 'error', 'message' => 'permission denied');
@@ -94,7 +94,7 @@ function _kendra_saracen_trial_mod_get_annotations($id) {
 function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FALSE) {
   // lookup node based on identifier
   $result = db_query("SELECT entity_id FROM {field_data_field_mediaitem_identifier}
-                        WHERE field_mediaitem_identifier_value=:identifier LIMIT 1", array(':identifier' => $id));
+      WHERE field_mediaitem_identifier_value=:identifier LIMIT 1", array(':identifier' => $id));
 
   if ($result->rowCount() == 0) {
     $node = node_load(intval($id));
@@ -148,14 +148,14 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
     }
 
     /*
-    // A failed attempt to use IMD Voting Aggregation Module to VotingAPI
+     // A failed attempt to use IMD Voting Aggregation Module to VotingAPI
     $criteria = array(
-		    'entity_type' => 'node',
-		    'entity_id' => $node->nid,
-		    'value_type' => 'percent',
-		    'tag' => 'vote',
-		    'function' => 'imdb',
-		    );
+        'entity_type' => 'node',
+        'entity_id' => $node->nid,
+        'value_type' => 'percent',
+        'tag' => 'vote',
+        'function' => 'imdb',
+    );
     $votes = votingapi_select_results($criteria);
     */
     // Lookup ratings
@@ -163,9 +163,9 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
     if (isset($votes['average']['value'])) {
       $user_vote = isset($votes['user']['value']) ? $votes['user']['value'] : NULL;
       $node->field_mediaitem_rate = array(
-        'average' => $votes['average']['value'],
-        'count' => $votes['count']['value'],
-        'user' => $user_vote,
+          'average' => $votes['average']['value'],
+          'count' => $votes['count']['value'],
+          'user' => $user_vote,
       );
     }
 
@@ -190,7 +190,7 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
     }
     $media_id = $node->field_mediaitem_identifier[LANGUAGE_NONE][0]['value'];
     $count_query = db_query("SELECT COUNT(watch_id) FROM {kendra_mediaitem_watch} WHERE media_id = :id",
-      array(':id' => $media_id));
+        array(':id' => $media_id));
     $node->views_count = intval($count_query->fetchField());
 
     //_kendra_saracen_trial_mod_filter_mediaitem($node, $include_derivatives);
@@ -208,29 +208,29 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
     }
     $node->recommended = array();
     $result = db_query("SELECT recommended_nid FROM {kendra_match_recommender_out_item_to_item} WHERE nid = :nid",
-      array(':nid' => $node->nid)
+        array(':nid' => $node->nid)
     );
     foreach ($result as $rec) {
       $temp = node_load($rec->recommended_nid);
-			if (!empty($temp->nid)) {
+      if (!empty($temp->nid)) {
         $node->recommended[$rec->recommended_nid] = $temp->field_mediaitem_identifier[LANGUAGE_NONE][0]['value'];
-			}
+      }
     }
 
-//    $watchers = db_select('kendra_mediaitem_watch', 'w')->fields('w')->condition('media_id', $id)->condition('stop', NULL)->execute();
+    //    $watchers = db_select('kendra_mediaitem_watch', 'w')->fields('w')->condition('media_id', $id)->condition('stop', NULL)->execute();
     $watchers = db_select('kendra_mediaitem_watch', 'w')
-      //->fields('w')->condition('media_id', $id)->groupBy('uid')
-      ->fields('w')->condition('media_id', $media_id)->groupBy('uid')
-      ->range(0, 10)->orderBy('start', 'DESC')->execute();
+    //->fields('w')->condition('media_id', $id)->groupBy('uid')
+    ->fields('w')->condition('media_id', $media_id)->groupBy('uid')
+    ->range(0, 10)->orderBy('start', 'DESC')->execute();
     $node->watchers = array();
     foreach ($watchers as $watching) {
-	    //if (_kendra_saracen_get_mediaitem_tracking($id, $watching->uid)) {
-	    if (_kendra_saracen_get_mediaitem_tracking($media_id, $watching->uid)) {
-		    $node->watchers[] = array(
-				    'uid' => $watching->uid,
-				    'started' => $watching->start,
-				    );
-	    }
+      //if (_kendra_saracen_get_mediaitem_tracking($id, $watching->uid)) {
+      if (_kendra_saracen_get_mediaitem_tracking($media_id, $watching->uid)) {
+        $node->watchers[] = array(
+            'uid' => $watching->uid,
+            'started' => $watching->start,
+        );
+      }
     }
 
     //$publish = _kendra_saracen_get_mediaitem_tracking($id);
@@ -243,9 +243,9 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
     $tags = field_get_items('node', $node, 'field_mediaitem_tags');
     $tid_list = array();
     $db_tags = db_query('SELECT tid, uid FROM {community_tags} WHERE nid = :nid',
-      array(':nid' => $node->nid));
+        array(':nid' => $node->nid));
     foreach ($db_tags->fetchAll() as $term) {
-        $tid_list[$term->tid] = $term->uid;
+      $tid_list[$term->tid] = $term->uid;
     }
     // iterate through tags and add uid info
     if (!empty($tags)) {
@@ -264,23 +264,23 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
 
 /*
  * Returns true if uid has allowed publish of watched information for the provided media id
- */
+*/
 function _kendra_saracen_get_mediaitem_tracking($id, $uid = NULL) {
-	if (empty($uid)) {
+  if (empty($uid)) {
     global $user;
     $uid = $user->uid;
   }
-	$tracking = db_query("SELECT * FROM {kendra_user_tracking} WHERE uid = :uid", array(':uid' => $uid));
-	$tracking = $tracking->fetchAll();
-	if (!empty($tracking)) {
-		foreach ($tracking as $track) {
-			$items = unserialize($track->data);
-			if (isset($items[$id]) && $items[$id] == 1) {
-				return TRUE;
-			}
-		}
-	}
-	return FALSE;
+  $tracking = db_query("SELECT * FROM {kendra_user_tracking} WHERE uid = :uid", array(':uid' => $uid));
+  $tracking = $tracking->fetchAll();
+  if (!empty($tracking)) {
+    foreach ($tracking as $track) {
+      $items = unserialize($track->data);
+      if (isset($items[$id]) && $items[$id] == 1) {
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
 }
 
 
@@ -289,47 +289,47 @@ function _kendra_saracen_get_mediaitem_tracking($id, $uid = NULL) {
  */
 function _kendra_saracen_trial_mod_filter_mediaitem(&$node, $include_derivatives = FALSE) {
   $mediaItem_properties = array(
-    //"vid",
-    //"uid",
-    "title",
-    //"log",
-    "status",
-    //"comment",
-    //"promote",
-    //"sticky",
-    //"nid",
-    "type",
-    "language",
-    "created",
-    "changed",
-    //"tnid",
-    //"translate",
-    //"revision_timestamp",
-    //"revision_uid",
-    "field_mediaitem_identifier",
-    "field_mediaitem_description",
-    "field_mediaitem_tags",
-    "field_mediaitem_rate",
-    "field_mediaitem_category",
-    "field_mediaitem_duration",
-    "field_mediaitem_3d",
-    "field_mediaitem_info",
-    //"rdf_mapping",
-    //"cid",
-    "last_comment_timestamp",
-    "last_comment_name",
-    "last_comment_uid",
-    "comment_count",
-    "name",
-    //"picture",
-    //"data",
-    "views_count",
-    "field_derivative_format	",
-    "field_derivative_codec",
-    "field_derivative_quality",
-    "field_derivative_url",
-    "field_derivative_uuid",
-    "derivativeID",
+      //"vid",
+      //"uid",
+      "title",
+      //"log",
+      "status",
+      //"comment",
+      //"promote",
+      //"sticky",
+      //"nid",
+      "type",
+      "language",
+      "created",
+      "changed",
+      //"tnid",
+      //"translate",
+      //"revision_timestamp",
+      //"revision_uid",
+      "field_mediaitem_identifier",
+      "field_mediaitem_description",
+      "field_mediaitem_tags",
+      "field_mediaitem_rate",
+      "field_mediaitem_category",
+      "field_mediaitem_duration",
+      "field_mediaitem_3d",
+      "field_mediaitem_info",
+      //"rdf_mapping",
+      //"cid",
+      "last_comment_timestamp",
+      "last_comment_name",
+      "last_comment_uid",
+      "comment_count",
+      "name",
+      //"picture",
+      //"data",
+      "views_count",
+      "field_derivative_format	",
+      "field_derivative_codec",
+      "field_derivative_quality",
+      "field_derivative_url",
+      "field_derivative_uuid",
+      "derivativeID",
   );
 
   if ($include_derivatives) {
@@ -355,18 +355,21 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     $page_size = 10;
   }
 
-  //$page1 = intval($page) * $page_size;
+  $premium_access = user_access("primetel premium content access");
+  $premium_user = user_load_by_name("Primetel");
+  
+  watchdog('List Items', 'verifying access for @user, @premium_user', array('@user'=>$user->uid, '@premium_user'=>print_r($premium_user)));
+  
   $offset = intval($page) * intval($page_size);
-  //$page2 = $page1 + $page_size;
 
   if (!empty($category)) {
     $vocab = taxonomy_vocabulary_machine_name_load('media_category');
-		$t_query = new EntityFieldQuery;
-		$t_result = $t_query
-		  ->entityCondition('entity_type', 'taxonomy_term')
-		  ->propertyCondition('name', trim($category))
-		  ->propertyCondition('vid', $vocab->vid)
-		  ->execute();
+    $t_query = new EntityFieldQuery;
+    $t_result = $t_query
+    ->entityCondition('entity_type', 'taxonomy_term')
+    ->propertyCondition('name', trim($category))
+    ->propertyCondition('vid', $vocab->vid)
+    ->execute();
 
     if (!empty($t_result['taxonomy_term'])) {
       $term = array_shift($t_result['taxonomy_term']);
@@ -374,34 +377,27 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     }
   }
 
-	if (!empty($category_tid)) {
-		/*$result = db_query("SELECT n.nid FROM {node} n
-			INNER JOIN {field_data_field_mediaitem_category} t ON t.entity_id = n.nid
-			WHERE ((n.type = 'mediaitem' AND n.status = 1) OR n.uid = :uid)
-			AND t.field_mediaitem_category_tid = :tid
-			ORDER BY n.changed DESC LIMIT {$page1}, {$page2}",
-		  array(':uid' => $uid, ':tid' => $category_tid));*/
-		$result = db_query("SELECT n.nid FROM {node} n
-			INNER JOIN {field_data_field_mediaitem_category} t ON t.entity_id = n.nid
-			WHERE ((n.type = 'mediaitem' AND n.status = 1) OR n.uid = :uid)
-			AND t.field_mediaitem_category_tid = :tid
-			ORDER BY n.changed DESC LIMIT {$offset}, {$page_size}",
-		  array(':uid' => $uid, ':tid' => $category_tid));
-	} else {
-		// if was given category but got here then category was empty
-		if (!empty($category)) {
-			return array();
-		}
-    		/*$result = db_query("SELECT nid FROM {node} WHERE (type = 'mediaitem' AND status = 1) OR uid = :uid ORDER BY changed DESC LIMIT {$page1}, {$page2}",array(':uid' => $uid));*/
-    		$result = db_query(
-				"SELECT nid 
-				FROM {node} 
-				WHERE 
-					(type = 'mediaitem' AND status = 1) 
-					OR uid = :uid 
-				ORDER BY changed DESC 
-				LIMIT {$offset}, {$page_size}",array(':uid' => $uid));
-	}
+  if (!empty($category_tid)) {
+    $result = db_query("SELECT n.nid FROM {node} n
+        INNER JOIN {field_data_field_mediaitem_category} t ON t.entity_id = n.nid
+        WHERE ((n.type = 'mediaitem' AND n.status = 1) OR n.uid = :uid)
+        AND t.field_mediaitem_category_tid = :tid
+        ORDER BY n.changed DESC LIMIT {$offset}, {$page_size}",
+        array(':uid' => $uid, ':tid' => $category_tid));
+  } else {
+    // if was given category but got here then category was empty
+    if (!empty($category)) {
+      return array();
+    }
+    $result = db_query(
+        "SELECT nid
+        FROM {node}
+        WHERE
+        (type = 'mediaitem' AND status = 1)
+        OR uid = :uid
+        ORDER BY changed DESC
+        LIMIT {$offset}, {$page_size}",array(':uid' => $uid));
+  }
 
   $results = array();
   foreach ($result as $node) {
@@ -454,6 +450,9 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
   global $user;
   $op = 'unknown';
 
+  if(!$user->uid)
+    return services_error("Only authenticated users can register content.",403);
+
   if (!isset($data['identifier'])) {
     if (!isset($data['title'])) {
       return (array('status' => 'error', 'message' => 'Media item Title or Identifier is required.'));
@@ -472,7 +471,7 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
 
   // Load the node if it exists, or create a new one
   $result = db_query("SELECT entity_id FROM {field_data_field_mediaitem_identifier}
-                        WHERE field_mediaitem_identifier_value=:identifier LIMIT 1", array(':identifier' => $data['identifier']));
+      WHERE field_mediaitem_identifier_value=:identifier LIMIT 1", array(':identifier' => $data['identifier']));
   $nid = NULL;
   foreach ($result as $record) {
     if (isset($record->entity_id)) {
@@ -528,12 +527,12 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
   }
   if (isset($data['category'])) {
     $vocab = taxonomy_vocabulary_machine_name_load('media_category');
-		$t_query = new EntityFieldQuery;
-		$t_result = $t_query
-		  ->entityCondition('entity_type', 'taxonomy_term')
-		  ->propertyCondition('name', trim($data['category']))
-		  ->propertyCondition('vid', $vocab->vid)
-		  ->execute();
+    $t_query = new EntityFieldQuery;
+    $t_result = $t_query
+    ->entityCondition('entity_type', 'taxonomy_term')
+    ->propertyCondition('name', trim($data['category']))
+    ->propertyCondition('vid', $vocab->vid)
+    ->execute();
 
     if (!empty($t_result['taxonomy_term'])) {
       $term = array_shift($t_result['taxonomy_term']);
@@ -549,13 +548,13 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
   }
   node_object_prepare($node);
   /*if ($op == 'updated') {
-    $node->status = 1;
+   $node->status = 1;
   }*/
   node_save($node);
 
   /**
    * set keywords
-   */
+  */
   if (isset($data['keywords'])) {
     $tags = split(',', $data['keywords']);
     foreach ($tags as $tag) {
@@ -569,7 +568,7 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
   _kendra_saracen_trial_mod_mediaitem_save_triples($node, $data, $store);
 
   /*
-  * set codec & quality
+   * set codec & quality
   */
 
   if (isset($data['codec']) && isset($data['quality'])) {
@@ -603,8 +602,8 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
 
   if (isset($derivative_id)) {
     $endpoints = array(
-      array('entity_type' => 'node', 'entity_id' => $node->nid),
-      array('entity_type' => 'node', 'entity_id' => $derivative->nid),
+        array('entity_type' => 'node', 'entity_id' => $node->nid),
+        array('entity_type' => 'node', 'entity_id' => $derivative->nid),
     );
     $relation = relation_create('derivative', $endpoints);
     $rid = relation_save($relation);
@@ -619,34 +618,34 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
 }
 
 /**
-* save media metadata to triple store
-*/
+ * save media metadata to triple store
+ */
 function _kendra_saracen_trial_mod_mediaitem_save_triples(&$node, &$data, $store) {
-	/*if (is_array($data)) {
-		foreach ($data as $value) {
-			_kendra_saracen_trial_mod_mediaitem_save_triples($node, $value, $store);
-		}
-	} else if (is_object($data)) {
-		// @todo
-	} else {
-		foreach ($data as $key => $value) {
-		  $value     = str_replace('"', '\"', trim($value));
-		  $url       = url('node/' . $node->nid, array('absolute' => TRUE));
-		  $predicate = url('node/' . $node->nid, array('fragment' => $key, 'absolute' => TRUE));
-		  $store->query("INSERT INTO <mediaitems> {\n" .
-		    "  <{$url}> <{$predicate}> \"{$value}\" .\n" . "}\n"
-		  );
-		}
-	}*/
+  /*if (is_array($data)) {
+   foreach ($data as $value) {
+  _kendra_saracen_trial_mod_mediaitem_save_triples($node, $value, $store);
+  }
+  } else if (is_object($data)) {
+  // @todo
+  } else {
+  foreach ($data as $key => $value) {
+  $value     = str_replace('"', '\"', trim($value));
+  $url       = url('node/' . $node->nid, array('absolute' => TRUE));
+  $predicate = url('node/' . $node->nid, array('fragment' => $key, 'absolute' => TRUE));
+  $store->query("INSERT INTO <mediaitems> {\n" .
+      "  <{$url}> <{$predicate}> \"{$value}\" .\n" . "}\n"
+  );
+  }
+  }*/
 
-	foreach ($data as $key => $value) {
-		$value     = str_replace('"', '\"', trim($value));
-		$url       = url('node/' . $node->nid, array('absolute' => TRUE));
-		$predicate = url('node/' . $node->nid, array('fragment' => $key, 'absolute' => TRUE));
-		$store->query("INSERT INTO <mediaitems> {\n" .
-				"  <{$url}> <{$predicate}> \"{$value}\" .\n" . "}\n"
-			     );
-	}
+  foreach ($data as $key => $value) {
+    $value     = str_replace('"', '\"', trim($value));
+    $url       = url('node/' . $node->nid, array('absolute' => TRUE));
+    $predicate = url('node/' . $node->nid, array('fragment' => $key, 'absolute' => TRUE));
+    $store->query("INSERT INTO <mediaitems> {\n" .
+        "  <{$url}> <{$predicate}> \"{$value}\" .\n" . "}\n"
+            );
+  }
 }
 
 /**
@@ -655,7 +654,7 @@ function _kendra_saracen_trial_mod_mediaitem_save_triples(&$node, &$data, $store
 function _kendra_saracen_trial_mod_tag_mediaitem($id, $data) {
   global $user;
   if (empty($data['tag'])) {
-	  return array('status' => 'error', 'message' => 'empty tag');
+    return array('status' => 'error', 'message' => 'empty tag');
   }
   $node = node_load(_kendra_saracen_trial_mod_lookup_id($id));
   $vid  = array_shift(community_tags_vids_for_node($node));
@@ -681,38 +680,38 @@ function _kendra_saracen_trial_mod_update_mediaitem($id, $data) {
 
 
 function _kendra_saracen_trial_mod_activity_track_mediaitem($id, $publish) {
-	if (!in_array($publish, array(0, 1))) {
-		return array('status' => 'error', 'message' => 'publish value must be 0 or 1');
-	}
-	global $user;
-	$tracking = db_query("SELECT * FROM {kendra_user_tracking} WHERE uid = :uid", array(':uid' => $user->uid));
-	$tracking = $tracking->fetchAll();
-	if (!empty($tracking)) {
-		foreach ($tracking as $track) {
-			$items = unserialize($track->data);
-			$items[$id] = $publish;
-			db_query("UPDATE {kendra_user_tracking} SET data = :data WHERE uid = :uid", array(':uid' => $user->uid,
-			  ':data' => serialize($items)));
-		}
-	} else {
-		db_query("INSERT INTO {kendra_user_tracking} VALUES (:uid, :data)", array(':uid' => $user->uid,
-			':data' => serialize(array($id => $publish))));
-	}
-	return array('status' => 'ok', 'message' => 'set privacy=' . $publish . ' for watching activity for item ' . $id,
-	  'identifier' => $id);
+  if (!in_array($publish, array(0, 1))) {
+    return array('status' => 'error', 'message' => 'publish value must be 0 or 1');
+  }
+  global $user;
+  $tracking = db_query("SELECT * FROM {kendra_user_tracking} WHERE uid = :uid", array(':uid' => $user->uid));
+  $tracking = $tracking->fetchAll();
+  if (!empty($tracking)) {
+    foreach ($tracking as $track) {
+      $items = unserialize($track->data);
+      $items[$id] = $publish;
+      db_query("UPDATE {kendra_user_tracking} SET data = :data WHERE uid = :uid", array(':uid' => $user->uid,
+      ':data' => serialize($items)));
+    }
+  } else {
+    db_query("INSERT INTO {kendra_user_tracking} VALUES (:uid, :data)", array(':uid' => $user->uid,
+    ':data' => serialize(array($id => $publish))));
+  }
+  return array('status' => 'ok', 'message' => 'set privacy=' . $publish . ' for watching activity for item ' . $id,
+      'identifier' => $id);
 }
 
 
 function _kendra_saracen_trial_mod_user_watched($uid) {
-	$res = db_query("SELECT DISTINCT media_id FROM {kendra_mediaitem_watch} WHERE uid = :uid", array(':uid' => $uid));
-	$res = $res->fetchAll();
-	$output = array();
-	foreach ($res as $media) {
-		if (_kendra_saracen_get_mediaitem_tracking($media->media_id, $uid)) {
-  		$output[] = $media->media_id;
-		}
-	}
-	return $output;
+  $res = db_query("SELECT DISTINCT media_id FROM {kendra_mediaitem_watch} WHERE uid = :uid", array(':uid' => $uid));
+  $res = $res->fetchAll();
+  $output = array();
+  foreach ($res as $media) {
+    if (_kendra_saracen_get_mediaitem_tracking($media->media_id, $uid)) {
+      $output[] = $media->media_id;
+    }
+  }
+  return $output;
 
 }
 
