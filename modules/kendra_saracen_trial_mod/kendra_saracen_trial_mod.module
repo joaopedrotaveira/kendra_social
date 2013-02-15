@@ -434,6 +434,21 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 
   $output = array();
 
+  $premium_access = false;
+  if(user_access("primetel premium content access")){
+  	$premium_access = true;
+  }
+  else {
+  	$premium_access = false;
+  }
+  //$premium_user = user_load_by_name("Primetel");
+  //$premium_uid = $premium_user->uid;
+  $premium_uid = 166;
+  $premium_filter = "";
+  if(!$premium_access){
+  	$premium_filter = " AND n.uid != ".$premium_uid;
+  }  
+  
   $inner_query = "";
 
   $url = "http://localhost:7080/similarity/{$nid}?howMany=10";
@@ -461,7 +476,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 
   $query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
   $query .= "INNER JOIN ".$inner_query." ON n.nid = r.recommended_nid ";
-  $query .= "WHERE n.status=1 AND n.nid != :nid ";
+  $query .= "WHERE n.status=1 AND n.nid != :nid {$premium_filter}";
   $query .= "ORDER BY r.weight DESC;";
 
   //watchdog('mahout','Query related items: '.$query);

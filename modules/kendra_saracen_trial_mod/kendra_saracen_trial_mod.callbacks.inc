@@ -365,7 +365,6 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     $premium_access = false;
   }
   
-  $premium_access = true;
   //$premium_user = user_load_by_name("Primetel");
   //$premium_uid = $premium_user->uid;
   $premium_uid = 166;

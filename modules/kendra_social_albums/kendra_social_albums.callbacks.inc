@@ -283,6 +283,18 @@ function _kendra_social_albums_retrieve_no_data($id, $no_data = FALSE, $include_
     // Box does not exist. TODO: also check permission
     return FALSE;
   }
+  
+  $premium_access = false;
+  if(user_access("primetel premium content access")){
+  	$premium_access = true;
+  }
+  else {
+  	$premium_access = false;
+  }
+  //$premium_user = user_load_by_name("Primetel");
+  //$premium_uid = $premium_user->uid;
+  $premium_uid = 166;  
+  
   $box = new StdClass();
   $box->id = $node->nid;
   $box->uid = $node->uid;
@@ -309,7 +321,9 @@ function _kendra_social_albums_retrieve_no_data($id, $no_data = FALSE, $include_
       if ($rel->relation_type == 'album_contains') {
         $rel = relation_load($item_id);
         $media = node_load($rel->endpoints['und'][1]['entity_id']);
-        if ($user->uid == $media->uid || $media->status == 1) {
+        if(!$premium_access && $media->uid == $premium_uid){
+        	// ignore item ...
+        } elseif ($user->uid == $media->uid || $media->status == 1) {
           $box->items[] = array(
               'identifier' => $media->field_mediaitem_identifier['und'][0]['value'],
               'mediaitem' => _kendra_saracen_trial_mod_get_mediaitem($media->field_mediaitem_identifier['und'][0]['value'], $include_derivatives),
