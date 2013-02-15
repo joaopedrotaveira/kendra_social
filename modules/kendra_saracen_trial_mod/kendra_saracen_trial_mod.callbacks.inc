@@ -359,7 +359,8 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
   $premium_user = user_load_by_name("Primetel");
   $premium_uid = $premium_user->uid;
   
-  watchdog('List Items', 'verifying access for: '.$uid.' to content of '.$premium_uid.' is:'.($premium_access)?"yes":"no");
+  watchdog('List Items', 'verifying access for: '.$uid.' to content of '.$premium_uid.' is:');
+  watchdog('List Items2', print_r($premium_access, TRUE));
   
   $offset = intval($page) * intval($page_size);
 
