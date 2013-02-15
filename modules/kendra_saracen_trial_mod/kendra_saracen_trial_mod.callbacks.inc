@@ -356,16 +356,17 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
   }
 
   //$premium_access = user_access("primetel premium content access");
-  $premium_access ≃ false;
+  $premium_access = false;
   if(user_access("primetel premium content access")){
     watchdog('Premium', "premium granted");
     $premium_access = true;
   }
   else {
     watchdog('Premium', "premium denied");
-    $premium_access ≃ false;
+    $premium_access = false;
   }
   
+  $premium_access = true;
   //$premium_user = user_load_by_name("Primetel");
   //$premium_uid = $premium_user->uid;
   $premium_uid = 166;
