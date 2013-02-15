@@ -356,17 +356,20 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
   }
 
   //$premium_access = user_access("primetel premium content access");
+  $premium_access ≃ false;
   if(user_access("primetel premium content access")){
     watchdog('Premium', "premium granted");
+    $premium_access = true;
   }
   else {
     watchdog('Premium', "premium denied");
+    $premium_access ≃ false;
   }
-  $premium_user = user_load_by_name("Primetel");
-  $premium_uid = $premium_user->uid;
   
-  watchdog('List Items', 'verifying access for: '.$uid.' to content of '.$premium_uid);
-  
+  //$premium_user = user_load_by_name("Primetel");
+  //$premium_uid = $premium_user->uid;
+  $premium_uid = 166;
+    
   $offset = intval($page) * intval($page_size);
 
   if (!empty($category)) {
@@ -384,10 +387,15 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     }
   }
 
+  $premium_filter = "";
+  if(!$premium_access){
+    $premium_filter = " AND n.uid != ".$premium_uid;
+  }
+  
   if (!empty($category_tid)) {
     $result = db_query("SELECT n.nid FROM {node} n
         INNER JOIN {field_data_field_mediaitem_category} t ON t.entity_id = n.nid
-        WHERE ((n.type = 'mediaitem' AND n.status = 1) OR n.uid = :uid)
+        WHERE ((n.type = 'mediaitem' AND n.status = 1 {$premium_filter}) OR n.uid = :uid)
         AND t.field_mediaitem_category_tid = :tid
         ORDER BY n.changed DESC LIMIT {$offset}, {$page_size}",
         array(':uid' => $uid, ':tid' => $category_tid));
@@ -399,9 +407,7 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     $result = db_query(
         "SELECT nid
         FROM {node}
-        WHERE
-        (type = 'mediaitem' AND status = 1)
-        OR uid = :uid
+        WHERE (type = 'mediaitem' AND status = 1 {$premium_filter}) OR uid = :uid
         ORDER BY changed DESC
         LIMIT {$offset}, {$page_size}",array(':uid' => $uid));
   }
