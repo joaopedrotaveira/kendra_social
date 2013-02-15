@@ -355,14 +355,13 @@ function _kendra_saracen_trial_mod_list_mediaitem($page = 0, $page_size = 10, $c
     $page_size = 10;
   }
 
-  //$premium_access = user_access("primetel premium content access");
   $premium_access = false;
   if(user_access("primetel premium content access")){
-    watchdog('Premium', "premium granted");
+    //watchdog('Premium', "premium granted");
     $premium_access = true;
   }
   else {
-    watchdog('Premium', "premium denied");
+    //watchdog('Premium', "premium denied");
     $premium_access = false;
   }
   
