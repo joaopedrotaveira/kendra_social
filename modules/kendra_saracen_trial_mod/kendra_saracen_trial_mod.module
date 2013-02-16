@@ -451,7 +451,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
   
   $inner_query = "";
 
-  $url = "http://localhost:7080/similarity/{$nid}?howMany=10";
+  $url = "http://localhost:7080/similarity/{$nid}?howMany=50";
   $response = drupal_http_request($url);
   if ($response->code == 200) {
     $recommendations = json_decode($response->data);
@@ -479,7 +479,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
   $query .= "WHERE n.status=1 AND n.nid != :nid {$premium_filter}";
   $query .= "ORDER BY r.weight DESC;";
 
-  //watchdog('mahout','Query related items: '.$query);
+  watchdog('mahout','Query related items: '.$query);
 
   try {
     $res = db_query($query, array(':nid' => $nid));
