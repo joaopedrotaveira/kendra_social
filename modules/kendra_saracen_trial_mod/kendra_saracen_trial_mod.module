@@ -476,7 +476,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
 
   $query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
   $query .= "INNER JOIN ".$inner_query." ON n.nid = r.recommended_nid ";
-  $query .= "WHERE n.status=1 AND n.nid != :nid {$premium_filter}";
+  $query .= "WHERE n.status=1 AND n.nid != :nid {$premium_filter} ";
   $query .= "ORDER BY r.weight DESC;";
 
   watchdog('mahout','Query related items: '.$query);
