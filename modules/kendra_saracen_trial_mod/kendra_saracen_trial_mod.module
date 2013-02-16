@@ -429,7 +429,8 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
   $nid = _kendra_saracen_trial_mod_lookup_id($id);
 
   if (empty($nid)) {
-    return array('status' => 'error', 'message' => 'Media item ID not found');
+    //return array('status' => 'error', 'message' => 'Media item ID not found');
+    return services_error('Media item ID not found',404);
   }
 
   $output = array();
@@ -471,7 +472,8 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
     }
   } else {
     watchdog('mahout', 'failed to contact mahout: ' . print_r($response, TRUE) . ' for ' . print_r($uid, TRUE));
-    return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
+    //return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
+    return services_error("Failed to get Media item recommendations");
   }
 
   $query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
@@ -479,7 +481,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
   $query .= "WHERE n.status=1 AND n.nid != :nid {$premium_filter} ";
   $query .= "ORDER BY r.weight DESC;";
 
-  watchdog('mahout','Query related items: '.$query);
+  //watchdog('mahout','Query related items: '.$query);
 
   try {
     $res = db_query($query, array(':nid' => $nid));
