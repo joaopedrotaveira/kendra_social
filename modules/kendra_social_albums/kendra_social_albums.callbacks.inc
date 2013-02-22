@@ -27,13 +27,16 @@ function _kendra_social_albums_add_item($box, $data) {
         _kendra_saracen_save_recommend($user->uid, $media, 'share', NULL, FALSE, NULL, 'implicit');
         return array('status' => 'ok', 'message' => "added media item ({$data['item']}) ({$media}) to box ({$box->nid})");
       } else {
-        return array('status' => 'error', 'message' => 'no media item found with that id');
+        //return array('status' => 'error', 'message' => 'no media item found with that id');
+        return services_error('no media item found with that id',404);
       }
     } else {
-      return array('status' => 'error', 'message' => 'you do not have access to edit this box');
+      //return array('status' => 'error', 'message' => 'you do not have access to edit this box');
+      return services_error('you do not have access to edit this box',406);
     }
   } else {
-    return array('status' => 'error', 'message' => 'a box ID and item ID is required');
+    //return array('status' => 'error', 'message' => 'a box ID and item ID is required');
+    return services_error('a box ID and item ID is required',400);
   }
 }
 
@@ -58,9 +61,10 @@ function _kendra_social_albums_update($id, $data) {
       $box->field_album_friends[LANGUAGE_NONE][0]['value'] = _kendra_social_parse_perm($data['friends']);
     }
     node_save($box);
-    return array('status' => 'OK', 'message' => 'box ' . $id . ' has been updated');
+    return array('status' => 'ok', 'message' => 'box ' . $id . ' has been updated');
   } else {
-    return array('status' => 'error', 'message' => 'permission denied, not your box');
+    //return array('status' => 'error', 'message' => 'permission denied, not your box');
+    return services_error('permission denied, not your box',406);
   }
 }
 
@@ -89,7 +93,8 @@ function _kendra_social_albums_create($data) {
   if (isset($data['title'])) {
     $node->title = $data['title'];
   } else {
-    return array('status' => 'error', 'message' => 'Title is required');
+    //return array('status' => 'error', 'message' => 'Title is required');
+    return services_error('Title is required',400);
   }
   if (isset($data['description'])) {
     $node->field_album_description['und'][0]['value'] = $data['description'];
@@ -260,11 +265,11 @@ function _kendra_social_albums_index_fetch($account = NULL) {
       }
       $output[$nid]['description'] = !empty($album_node->description) ? $album_node->description : '';
       $output[$nid]['item_count'] = isset($album_node->items) ? count($album_node->items) : 0;
-    } else {
+    } 
+    else {
       //$output[$nid]['debug'] = $album_node;
     }
   }
-
   return $output;
 }
 
@@ -360,7 +365,6 @@ function _kendra_social_albums_retrieve_no_data($id, $no_data = FALSE, $include_
     }
     unset($box->users_temp);
   }
-
   return $box;
 }
 
@@ -388,7 +392,8 @@ function _kendra_social_albums_retrieve($id, $include_derivatives = FALSE) {
       }
     }
   }
-  return array('status' => 'error', 'message' => 'permission denied');
+  //return array('status' => 'error', 'message' => 'permission denied');
+  return services_error('Access denied to album',406);
 }
 
 
@@ -397,9 +402,11 @@ function _kendra_social_albums_delete($id) {
   global $user;
   if ($user->uid == $album->uid) {
     node_delete($id);
-    return array('status' => 'deleted box with ID ' . $id);
+    //return array('status' => 'deleted box with ID ' . $id);
+    return array('status' => 'ok', 'message' => 'deleted box with ID ' . $id);
   }
-  return array('status' => 'error', 'message' => 'user can only delete their own box.');
+  //return array('status' => 'error', 'message' => 'user can only delete their own box.');
+  return services_error('User cannot delete other users\' boxes.',406);
 }
 
 function _kendra_social_add_user_to_box($uid, $bid, $perm, $action = 'update') {
@@ -456,7 +463,6 @@ function _kendra_social_add_user_to_box($uid, $bid, $perm, $action = 'update') {
     }
   }
   return FALSE;
-
 }
 
 function _kendra_social_remove_perm(&$perm_array, $perm) {
@@ -525,7 +531,8 @@ function _kendra_social_albums_update_user($id, $data) {
   global $user;
   $box = node_load($id);
   if ($box->uid != $user->uid) {
-    return array('status' => 'error', 'message' => 'this is not your box.');
+    //return array('status' => 'error', 'message' => 'this is not your box.');
+    return services_error('User cannot update this box. Box owner mismatch.',406);
   }
   $bid = $id;
   $updates = array();
@@ -551,7 +558,8 @@ function _kendra_social_albums_update_user($id, $data) {
         "added user ({$data['user']}) to box ({$id})", 'identifier' => implode(',', $updates));
   }
   if ($fail) {
-    return array('status' => 'error', 'message' => 'user and album are required');
+    //return array('status' => 'error', 'message' => 'user and box are required');
+    return services_error('user and box are required', 400);
   }
   return array('status' => 'ok', 'message' => "deleted user ({$data['user']}) from box ({$id})");
 }

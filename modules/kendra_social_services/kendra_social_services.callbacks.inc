@@ -33,7 +33,8 @@ function _kss_watching_now($limit = 10, $who, $sort, $filter3d, $friends) {
     $msg = 'Friends filter must be either yes or no';
   }
   if (!empty($msg)) {
-    return array('status' => 'error', 'message' => $msg);
+    //return array('status' => 'error', 'message' => $msg);
+    return services_error($msg, 400);
   }
   $orderby = ' ORDER BY w.start DESC ';
   if ($sort == 'affinity') {

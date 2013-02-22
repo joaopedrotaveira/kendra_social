@@ -6,10 +6,12 @@
 
 function _kendra_saracen_trial_mod_save_user_prefs($data) {
   if (!in_array($data['fb_update'], array('0', '1'))) {
-    return array('status' => 'error', 'message' => 'fb_update must be 0 or 1');
+    //return array('status' => 'error', 'message' => 'fb_update must be 0 or 1');
+    return services_error('fb_update must be 0 or 1',400);
   }
   if (!in_array($data['get_email'], array('0', '1'))) {
-    return array('status' => 'error', 'message' => 'get_email must be 0 or 1');
+    //return array('status' => 'error', 'message' => 'get_email must be 0 or 1');
+    return services_error('get_email must be 0 or 1',400);
   }
   $edit = array('data' => array(
       'fb_update' => !empty($data['fb_update']),
@@ -474,7 +476,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
   } else {
     watchdog('mahout', 'failed to contact mahout: ' . print_r($response, TRUE) . ' for ' . print_r($uid, TRUE));
     //return array('status' => 'error', 'message' => 'Failed to get Media item recommendations');
-    return services_error("Failed to get Media item recommendations");
+    return services_error("Failed to get Media item recommendations",503);
   }
 
   $query = "SELECT DISTINCT r.recommended_nid FROM {node} n ";
@@ -507,6 +509,7 @@ function _kendra_saracen_trial_mod_media_recommendations($id) {
   }
   return $output;
   } else {
-  return array('status' => 'error', 'message' => 'Media item ID not found');
+  //return array('status' => 'error', 'message' => 'Media item ID not found');
+  return services_error('Media item not found',404);
   }*/
 }

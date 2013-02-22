@@ -170,7 +170,8 @@ function _kss_notification_approve($data) {
   foreach ($ids as $key => $id) {
     $ids[$key] = intval($id);
     if (!is_int($ids[$key])) {
-      return array('status' => 'error', 'message' => 'all IDs must be integers');
+      //return array('status' => 'error', 'message' => 'all IDs must be integers');
+      return services_error('Invalid Arguments. Integer IDs required',400);
     }
   }
   if (!empty($ids)) {
@@ -186,7 +187,8 @@ function _kss_notification_reject($data) {
   foreach ($ids as $key => $id) {
     $ids[$key] = intval($id);
     if (!is_int($ids[$key])) {
-      return array('status' => 'error', 'message' => 'all IDs must be integers');
+      //return array('status' => 'error', 'message' => 'all IDs must be integers');
+      return services_error('Invalid Arguments. Integer IDs required',400);
     }
   }
   // load the notification, depending on type remove source

@@ -73,7 +73,8 @@ function _kendra_social_albums_delete_item($box, $data) {
 		//}
     $media = _kendra_saracen_trial_mod_lookup_id($data['item']);
     if (empty($media)) {
-	    return array('status' => 'error', 'message' => 'invalid media item ID');
+	    //return array('status' => 'error', 'message' => 'invalid media item ID');
+	    return services_error('Invalid media item ID', 404);
     }
     $query = new EntityFieldQuery();
     $res = $query->entityCondition('entity_type', 'relation')
@@ -85,13 +86,15 @@ function _kendra_social_albums_delete_item($box, $data) {
 
     if (isset($relation->rid)) {
       relation_delete($relation->rid);
-      return array('status' => 'ok', 'message' => 'item deleted from album');
+      return array('status' => 'ok', 'message' => 'item deleted from box');
     } else {
-      return array('status' => 'error', 'message' => 'no matching item found in album');
+      //return array('status' => 'error', 'message' => 'no matching item found in album');
+      return services_error('No item found in box',404);
     }
 
   } else {
-    return array('status' => 'error', 'message' => 'a box ID and item ID is required');
+    //return array('status' => 'error', 'message' => 'a box ID and item ID is required');
+    return services_error('A box ID and item ID is required',400);
   }
 }
 

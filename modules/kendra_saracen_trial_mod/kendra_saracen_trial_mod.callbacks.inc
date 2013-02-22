@@ -9,14 +9,17 @@ function _kendra_saracen_trial_mod_annotate_mediaitem($id, $data) {
   global $user;
   $org = node_load(_kendra_saracen_trial_mod_lookup_id($id));
   if (!isset($org->nid)) {
-    return array('status' => 'error', 'message' => 'unknown identifier');
+    //return array('status' => 'error', 'message' => 'unknown identifier');
+    return services_error('Identifier not found',404);
   }
   if (!isset($data['type'])) {
-    return array('status' => 'error', 'message' => 'required attribute "type" is missing');
+    //return array('status' => 'error', 'message' => 'required attribute "type" is missing');
+    return services_error('Required attribute "type" is missing',400);
   }
   $data['type'] = ucwords($data['type']);
   if ($data['type'] == 'rate' || $data['type'] == 'rating') {
-    return array('status' => 'error', 'message' => 'use the dedicated rating API resource');
+    //return array('status' => 'error', 'message' => 'Use the dedicated rating API resource');
+    return services_error('Use the dedicated rating API resource',406);
   }
   $node = new StdClass();
   $node->type = 'annotation';
@@ -48,7 +51,7 @@ function _kendra_saracen_trial_mod_annotate_mediaitem($id, $data) {
   node_save($node);
 
   _kss_notification_add($data['type'], $org->nid, $user->uid, $org->uid, $node->nid);
-  return array('status' => 'OK', 'message' => 'created user annotation for ' . $org->title,
+  return array('status' => 'ok', 'message' => 'created user annotation for ' . $org->title,
       'type' => $data['type'],
   );
 }
@@ -64,13 +67,15 @@ function _kendra_saracen_trial_mod_delete_mediaitem($id) {
   $node = node_load($nid);
   global $user;
   if (!isset($node->nid)) {
-    return array('status' => 'error', 'message' => 'unknown identifier');
+    //return array('status' => 'error', 'message' => 'unknown identifier');
+    return services_error('Identifier not found',404);
   }
   if (node_access('delete', $node, $user)) {
     node_delete($nid);
     return array('status' => 'ok', 'message' => 'deleted media item ' . $title);
   }
-  return array('status' => 'error', 'message' => 'permission denied');
+  //return array('status' => 'error', 'message' => 'permission denied');
+  return services_error('Permission denied',406);
 }
 
 /**
@@ -258,7 +263,8 @@ function _kendra_saracen_trial_mod_get_mediaitem($id, $include_derivatives = FAL
 
     return $node;
   }
-  return array('status' => 'error', 'message' => 'unknown identifier ' . var_export($id, TRUE));
+  //return array('status' => 'error', 'message' => 'unknown identifier ' . var_export($id, TRUE));
+  return services_error('Identifier not found: ' . var_export($id, TRUE), 404);
   //return 'unknown identifier: ' . var_export($id, TRUE);
 }
 
@@ -467,7 +473,8 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
 
   if (!isset($data['identifier'])) {
     if (!isset($data['title'])) {
-      return (array('status' => 'error', 'message' => 'Media item Title or Identifier is required.'));
+      //return (array('status' => 'error', 'message' => 'Media item Title or Identifier is required.'));
+      return services_error('Media item Title or Identifier is required.',400);
     }
     $data['identifier'] = uniqid($data['title']);
   }
@@ -494,7 +501,8 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
     $op = 'updated';
     $node = node_load($nid);
     if (!node_access('update', $node, $user)) {
-      return array('status' => 'error', 'message' => 'user does not have permission to update ' . $data['identifier']);
+      //return array('status' => 'error', 'message' => 'user does not have permission to update ' . $data['identifier']);
+      return services_error('User does not have permission to update ' . $data['identifier'], 406);
     }
   }
   else {
@@ -626,7 +634,7 @@ function _kendra_saracen_trial_mod_register_mediaitem($data = NULL) {
   }
 
   // return notification of registered node
-  return array('status' => 'OK', 'message' => 'Media item ' . $op, 'identifier' => $data['identifier']);
+  return array('status' => 'ok', 'message' => 'Media item ' . $op, 'identifier' => $data['identifier']);
 }
 
 /**
@@ -666,7 +674,8 @@ function _kendra_saracen_trial_mod_mediaitem_save_triples(&$node, &$data, $store
 function _kendra_saracen_trial_mod_tag_mediaitem($id, $data) {
   global $user;
   if (empty($data['tag'])) {
-    return array('status' => 'error', 'message' => 'empty tag');
+    //return array('status' => 'error', 'message' => 'empty tag');
+    return services_error('Missing tag argument',400);
   }
   $node = node_load(_kendra_saracen_trial_mod_lookup_id($id));
   $vid  = array_shift(community_tags_vids_for_node($node));
@@ -693,7 +702,8 @@ function _kendra_saracen_trial_mod_update_mediaitem($id, $data) {
 
 function _kendra_saracen_trial_mod_activity_track_mediaitem($id, $publish) {
   if (!in_array($publish, array(0, 1))) {
-    return array('status' => 'error', 'message' => 'publish value must be 0 or 1');
+    //return array('status' => 'error', 'message' => 'publish value must be 0 or 1');
+    return services_error('Publish value must be 0 or 1',400);
   }
   global $user;
   $tracking = db_query("SELECT * FROM {kendra_user_tracking} WHERE uid = :uid", array(':uid' => $user->uid));

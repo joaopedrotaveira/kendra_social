@@ -2,7 +2,7 @@
 
 function _primetel_subscriber_upgrade($uid = 0){
   if($uid == 0){
-    return services_error(t('Invalid User ID'));
+    return services_error(t('Invalid User ID'), 400);
   }
   $role_name = 'primetel subscriber';
   if ($role = user_role_load_by_name($role_name)) {
@@ -13,7 +13,7 @@ function _primetel_subscriber_upgrade($uid = 0){
 
 function _primetel_subscriber_downgrade($uid = 0){
   if($uid == 0){
-    return services_error(t('Invalid User ID'));
+    return services_error(t('Invalid User ID'),400);
   }
   $role_name = 'primetel subscriber';
   if ($role = user_role_load_by_name($role_name)) {
