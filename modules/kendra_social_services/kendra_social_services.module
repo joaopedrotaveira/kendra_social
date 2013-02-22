@@ -35,7 +35,8 @@ function _kss_user_load_facebook_friends(&$users) {
   foreach ($friends as $friend) {
     /*if (REQUEST_TIME - $friend->imported <= 864000) { // 10 days */
     /*if (REQUEST_TIME - $friend->imported <= 120) { 2min */
-    if (REQUEST_TIME - $friend->imported <= 172800) { // 2 days
+    /*if (REQUEST_TIME - $friend->imported <= 172800) {*/  // 2 days
+    if (REQUEST_TIME - $friend->imported <= 3600) { // 1 hour
       $users[$friend->uid]->saracen_friends = unserialize($friend->data);
       $users[$friend->uid]->friends_last_imported = $friend->imported;
     } else {

@@ -143,7 +143,8 @@ function _kendra_saracen_get_facebook_friends($account, $fbu, $access_code) {
   $response = drupal_http_request($fb);
   if ($response->code == 200) {
     $data = json_decode($response->data);
-    cache_set('saracen_fb_user_friends_' . $fbu, $data->data, 'cache', REQUEST_TIME + 24*60*60);
+    cache_set('saracen_fb_user_friends_' . $fbu, $data->data, 'cache', REQUEST_TIME + 60*60);
+    //cache_set('saracen_fb_user_friends_' . $fbu, $data->data, 'cache', REQUEST_TIME + 24*60*60);
     return $data->data;
   } else {
     watchdog('fb friend debug2', 'failed to import: ' . print_r($response, TRUE) . ' for ' . print_r($account->uid, TRUE));
