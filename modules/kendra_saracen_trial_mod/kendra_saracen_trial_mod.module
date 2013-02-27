@@ -308,7 +308,7 @@ function _kss_fb_connect_debug() {
       ->condition('fbu', $account->fbu)
       ->execute();
       //echo('yes: ' . $access_token);
-      watchdog('debuging fbupdate', 'at #1: '.$access_token);
+      //watchdog('debuging fbupdate', 'at #1: '.$access_token);
     } else if (!empty($decoded_response->id)) {
       // Case 2: FB user has updated access token
       $res = db_update('fb_user_app')
@@ -316,12 +316,12 @@ function _kss_fb_connect_debug() {
       ->condition('fbu', $decoded_response->id)
       ->execute();
       //echo('yes2: ' . $access_token);
-      watchdog('debuging fbupdate', 'at #2:'.$access_token);
+      //watchdog('debuging fbupdate', 'at #2:'.$access_token);
     }
     drupal_set_message("Your Facebook access token has been updated");
   }
   //echo('a: ' . $access_token);
-  watchdog('debuging fbupdate', 'resp: '.print_r($decoded_response, TRUE));
+  //watchdog('debuging fbupdate', 'resp: '.print_r($decoded_response, TRUE));
   //print '<pre>' . print_r(get_defined_vars(), TRUE) . '</pre>';
   //drupal_goto('fb-update', array('query' => array('key' => $access_token)));
   drupal_goto('user');
